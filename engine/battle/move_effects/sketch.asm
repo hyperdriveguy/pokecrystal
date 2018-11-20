@@ -1,4 +1,4 @@
-BattleCommand_Sketch: ; 35a74
+BattleCommand_Sketch:
 ; sketch
 
 	call ClearLastMove
@@ -27,14 +27,14 @@ BattleCommand_Sketch: ; 35a74
 	ld e, l
 ; Get the battle move structs.
 	ld hl, wBattleMonMoves
-	ld a, [hBattleTurn]
+	ldh a, [hBattleTurn]
 	and a
 	jr z, .get_last_move
 	ld hl, wEnemyMonMoves
 .get_last_move
 	ld a, BATTLE_VARS_LAST_COUNTER_MOVE_OPP
 	call GetBattleVar
-	ld [wTypeMatchup], a
+	ld [wNamedObjectIndexBuffer], a
 	ld b, a
 ; Fail if move is invalid or is Struggle.
 	and a
@@ -74,7 +74,7 @@ BattleCommand_Sketch: ; 35a74
 	ld [hl], a
 	pop bc
 
-	ld a, [hBattleTurn]
+	ldh a, [hBattleTurn]
 	and a
 	jr z, .user_trainer
 	ld a, [wBattleMode]
@@ -115,5 +115,3 @@ BattleCommand_Sketch: ; 35a74
 .fail
 	call AnimateFailedMove
 	jp PrintDidntAffect
-
-; 35b16

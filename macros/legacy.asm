@@ -1,5 +1,6 @@
-; Legacy support for pre-2018 pokecrystal.
+; Legacy support for old pokecrystal.
 ; Allows porting scripts with as few edits as possible.
+; Legacy support not in this file can be found by looking for the keyword: "LEGACY"
 
 ; macros/rst.asm
 callba EQUS "farcall"
@@ -7,7 +8,6 @@ callab EQUS "callfar"
 
 ; macros/scripts/audio.asm
 unknownmusic0xde EQUS "sound_duty"
-
 
 ; macros/scripts/events.asm
 
@@ -54,7 +54,6 @@ displaylocation   EQUS "landmarktotext"
 givepokeitem      EQUS "givepokemail"
 checkpokeitem     EQUS "checkpokemail"
 
-
 ; macros/scripts/maps.asm
 
 mapconst: MACRO
@@ -93,7 +92,6 @@ ENDM
 PERSONTYPE_SCRIPT   EQUS "OBJECTTYPE_SCRIPT"
 PERSONTYPE_ITEMBALL EQUS "OBJECTTYPE_ITEMBALL"
 PERSONTYPE_TRAINER  EQUS "OBJECTTYPE_TRAINER"
-
 
 ; macros/scripts/movement.asm
 
@@ -166,3 +164,13 @@ step_sleep_5 EQUS "step_sleep 5"
 step_sleep_6 EQUS "step_sleep 6"
 step_sleep_7 EQUS "step_sleep 7"
 step_sleep_8 EQUS "step_sleep 8"
+
+; macros/scripts/text.asm
+text_from_ram          EQUS "text_ram"
+start_asm              EQUS "text_asm"
+deciram                EQUS "text_decimal"
+interpret_data         EQUS "text_pause"
+limited_interpret_data EQUS "text_dots"
+link_wait_button       EQUS "text_linkwaitbutton"
+current_day            EQUS "text_today"
+text_jump              EQUS "text_far"

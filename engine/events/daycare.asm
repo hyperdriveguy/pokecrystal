@@ -21,7 +21,7 @@
 	const DAYCARETEXT_OH_FINE
 	const DAYCARETEXT_COME_AGAIN
 
-DayCareMan: ; 166d6
+DayCareMan:
 	ld hl, wDayCareMan
 	bit DAYCAREMAN_HAS_MON_F, [hl]
 	jr nz, .AskWithdrawMon
@@ -58,9 +58,8 @@ DayCareMan: ; 166d6
 	ld a, DAYCARETEXT_COME_AGAIN
 	call PrintDayCareText
 	ret
-; 1672a
 
-DayCareLady: ; 1672a
+DayCareLady:
 	ld hl, wDayCareLady
 	bit DAYCARELADY_HAS_MON_F, [hl]
 	jr nz, .AskWithdrawMon
@@ -98,9 +97,8 @@ DayCareLady: ; 1672a
 	ld a, DAYCARETEXT_COME_AGAIN
 	call PrintDayCareText
 	ret
-; 16781
 
-DayCareLadyIntroText: ; 16781
+DayCareLadyIntroText:
 	bit DAYCARELADY_ACTIVE_F, [hl]
 	jr nz, .okay
 	set DAYCARELADY_ACTIVE_F, [hl]
@@ -109,16 +107,14 @@ DayCareLadyIntroText: ; 16781
 	call PrintDayCareText
 	call YesNoBox
 	ret
-; 1678f
 
-DayCareManIntroText: ; 1678f
+DayCareManIntroText:
 	set DAYCAREMAN_ACTIVE_F, [hl]
 	call PrintDayCareText
 	call YesNoBox
 	ret
-; 16798
 
-DayCareAskDepositPokemon: ; 16798
+DayCareAskDepositPokemon:
 	ld a, [wPartyCount]
 	cp 2
 	jr c, .OnlyOneMon
@@ -169,15 +165,13 @@ DayCareAskDepositPokemon: ; 16798
 	ld a, DAYCARETEXT_REMOVE_MAIL
 	scf
 	ret
-; 167f1
 
-.DummyText: ; 0x167f1
+.DummyText:
 	;
-	text_jump UnknownText_0x1bdaa7
-	db "@"
-; 0x167f6
+	text_far UnknownText_0x1bdaa7
+	text_end
 
-DayCare_DepositPokemonText: ; 167f6
+DayCare_DepositPokemonText:
 	ld a, DAYCARETEXT_DEPOSIT
 	call PrintDayCareText
 	ld a, [wCurPartySpecies]
@@ -185,9 +179,8 @@ DayCare_DepositPokemonText: ; 167f6
 	ld a, DAYCARETEXT_COME_BACK_LATER
 	call PrintDayCareText
 	ret
-; 16807
 
-DayCare_AskWithdrawBreedMon: ; 16807
+DayCare_AskWithdrawBreedMon:
 	ld a, [wStringBuffer2 + 1]
 	and a
 	jr nz, .grew_at_least_one_level
@@ -232,9 +225,8 @@ DayCare_AskWithdrawBreedMon: ; 16807
 	ld a, DAYCARETEXT_PARTY_FULL
 	scf
 	ret
-; 16850
 
-DayCare_GetBackMonForMoney: ; 16850
+DayCare_GetBackMonForMoney:
 	ld bc, wStringBuffer2 + 2
 	ld de, wMoney
 	farcall TakeMoney
@@ -245,9 +237,8 @@ DayCare_GetBackMonForMoney: ; 16850
 	ld a, DAYCARETEXT_GOT_BACK
 	call PrintDayCareText
 	ret
-; 1686d
 
-GetPriceToRetrieveBreedmon: ; 1686d
+GetPriceToRetrieveBreedmon:
 	ld a, b
 	ld [wStringBuffer2], a
 	ld a, d
@@ -268,9 +259,8 @@ GetPriceToRetrieveBreedmon: ; 1686d
 	ld a, l
 	ld [wStringBuffer2 + 4], a
 	ret
-; 1689b
 
-PrintDayCareText: ; 1689b
+PrintDayCareText:
 	ld e, a
 	ld d, 0
 	ld hl, .TextTable
@@ -281,9 +271,8 @@ PrintDayCareText: ; 1689b
 	ld l, a
 	call PrintText
 	ret
-; 168aa
 
-.TextTable: ; 168aa
+.TextTable:
 ; entries correspond to DAYCARETEXT_* constants
 	dw .DayCareManIntro ; 00
 	dw .DayCareManOddEgg ; 01
@@ -305,129 +294,108 @@ PrintDayCareText: ; 1689b
 	dw .NotEnoughMoney ; 11
 	dw .OhFineThen ; 12
 	dw .ComeAgain ; 13
-; 168d2
 
-.DayCareManIntro: ; 0x168d2
+.DayCareManIntro:
 	; I'm the DAY-CARE MAN. Want me to raise a #MON?
-	text_jump UnknownText_0x1bdaa9
-	db "@"
-; 0x168d7
+	text_far UnknownText_0x1bdaa9
+	text_end
 
-.DayCareManOddEgg: ; 0x168d7
+.DayCareManOddEgg:
 	; I'm the DAY-CARE MAN. Do you know about EGGS? I was raising #MON with my wife, you see. We were shocked to find an EGG! How incredible is that? So, want me to raise a #MON?
-	text_jump UnknownText_0x1bdad8
-	db "@"
-; 0x168dc
+	text_far UnknownText_0x1bdad8
+	text_end
 
-.DayCareLadyIntro: ; 0x168dc
+.DayCareLadyIntro:
 	; I'm the DAY-CARE LADY. Should I raise a #MON for you?
-	text_jump UnknownText_0x1bdb85
-	db "@"
-; 0x168e1
+	text_far UnknownText_0x1bdb85
+	text_end
 
-.DayCareLadyOddEgg: ; 0x168e1
+.DayCareLadyOddEgg:
 	; I'm the DAY-CARE LADY. Do you know about EGGS? My husband and I were raising some #MON, you see. We were shocked to find an EGG! How incredible could that be? Should I raise a #MON for you?
-	text_jump UnknownText_0x1bdbbb
-	db "@"
-; 0x168e6
+	text_far UnknownText_0x1bdbbb
+	text_end
 
-.WhichOne: ; 0x168e6
+.WhichOne:
 	; What should I raise for you?
-	text_jump UnknownText_0x1bdc79
-	db "@"
-; 0x168eb
+	text_far UnknownText_0x1bdc79
+	text_end
 
-.JustOneMon: ; 0x168eb
+.JustOneMon:
 	; Oh? But you have just one #MON.
-	text_jump UnknownText_0x1bdc97
-	db "@"
-; 0x168f0
+	text_far UnknownText_0x1bdc97
+	text_end
 
-.CantAcceptEgg: ; 0x168f0
+.CantAcceptEgg:
 	; Sorry, but I can't accept an EGG.
-	text_jump UnknownText_0x1bdcb8
-	db "@"
-; 0x168f5
+	text_far UnknownText_0x1bdcb8
+	text_end
 
-.RemoveMail: ; 0x168f5
+.RemoveMail:
 	; Remove MAIL before you come see me.
-	text_jump UnknownText_0x1bdcda
-	db "@"
-; 0x168fa
+	text_far UnknownText_0x1bdcda
+	text_end
 
-.LastHealthyMon: ; 0x168fa
+.LastHealthyMon:
 	; If you give me that, what will you battle with?
-	text_jump UnknownText_0x1bdcff
-	db "@"
-; 0x168ff
+	text_far UnknownText_0x1bdcff
+	text_end
 
-.OkayIllRaiseYourMon: ; 0x168ff
+.OkayIllRaiseYourMon:
 	; OK. I'll raise your @ .
-	text_jump UnknownText_0x1bdd30
-	db "@"
-; 0x16904
+	text_far UnknownText_0x1bdd30
+	text_end
 
-.ComeBackForItLater: ; 0x16904
+.ComeBackForItLater:
 	; Come back for it later.
-	text_jump UnknownText_0x1bdd4b
-	db "@"
-; 0x16909
+	text_far UnknownText_0x1bdd4b
+	text_end
 
-.AreWeGeniusesOrWhat: ; 0x16909
+.AreWeGeniusesOrWhat:
 	; Are we geniuses or what? Want to see your @ ?
-	text_jump UnknownText_0x1bdd64
-	db "@"
-; 0x1690e
+	text_far UnknownText_0x1bdd64
+	text_end
 
-.AskRetrieveMon: ; 0x1690e
+.AskRetrieveMon:
 	; Your @ has grown a lot. By level, it's grown by @ . If you want your #MON back, it will cost ¥@ .
-	text_jump UnknownText_0x1bdd96
-	db "@"
-; 0x16913
+	text_far UnknownText_0x1bdd96
+	text_end
 
-.PerfectHeresYourMon: ; 0x16913
+.PerfectHeresYourMon:
 	; Perfect! Here's your #MON.
-	text_jump UnknownText_0x1bde04
-	db "@"
-; 0x16918
+	text_far UnknownText_0x1bde04
+	text_end
 
-.GotBackMon: ; 0x16918
+.GotBackMon:
 	; got back @ .
-	text_jump UnknownText_0x1bde1f
-	db "@"
-; 0x1691d
+	text_far UnknownText_0x1bde1f
+	text_end
 
-.ImmediatelyWithdrawMon: ; 0x1691d
+.ImmediatelyWithdrawMon:
 	; Huh? Back already? Your @ needs a little more time with us. If you want your #MON back, it will cost ¥100.
-	text_jump UnknownText_0x1bde32
-	db "@"
-; 0x16922
+	text_far UnknownText_0x1bde32
+	text_end
 
-.PartyFull: ; 0x16922
+.PartyFull:
 	; You have no room for it.
-	text_jump UnknownText_0x1bdea2
-	db "@"
-; 0x16927
+	text_far UnknownText_0x1bdea2
+	text_end
 
-.NotEnoughMoney: ; 0x16927
+.NotEnoughMoney:
 	; You don't have enough money.
-	text_jump UnknownText_0x1bdebc
-	db "@"
-; 0x1692c
+	text_far UnknownText_0x1bdebc
+	text_end
 
-.OhFineThen: ; 0x1692c
+.OhFineThen:
 	; Oh, fine then.
-	text_jump UnknownText_0x1bded9
-	db "@"
-; 0x16931
+	text_far UnknownText_0x1bded9
+	text_end
 
-.ComeAgain: ; 0x16931
+.ComeAgain:
 	; Come again.
-	text_jump UnknownText_0x1bdee9
-	db "@"
-; 0x16936
+	text_far UnknownText_0x1bdee9
+	text_end
 
-DayCareManOutside: ; 16936
+DayCareManOutside:
 	ld hl, wDayCareMan
 	bit DAYCAREMAN_HAS_EGG_F, [hl]
 	jr nz, .AskGiveEgg
@@ -435,13 +403,12 @@ DayCareManOutside: ; 16936
 	call PrintText
 	ret
 
-.NotYet: ; 0x16944
+.NotYet:
 	; Not yet…
-	text_jump UnknownText_0x1bdef6
-	db "@"
-; 0x16949
+	text_far UnknownText_0x1bdef6
+	text_end
 
-.AskGiveEgg: ; 16949
+.AskGiveEgg:
 	ld hl, .IntroText
 	call PrintText
 	call YesNoBox
@@ -477,39 +444,33 @@ DayCareManOutside: ; 16936
 	ld a, TRUE
 	ld [wScriptVar], a
 	ret
-; 16993
 
-.IntroText: ; 0x16993
+.IntroText:
 	; Ah, it's you! We were raising your #MON, and my goodness, were we surprised! Your #MON had an EGG! We don't know how it got there, but your #MON had it. You want it?
-	text_jump UnknownText_0x1bdf00
-	db "@"
-; 0x16998
+	text_far UnknownText_0x1bdf00
+	text_end
 
-.GotEggText: ; 0x16998
+.GotEggText:
 	; received the EGG!
-	text_jump UnknownText_0x1bdfa5
-	db "@"
-; 0x1699d
+	text_far UnknownText_0x1bdfa5
+	text_end
 
-.TakeGoodCareOfItText: ; 0x1699d
+.TakeGoodCareOfItText:
 	; Take good care of it.
-	text_jump UnknownText_0x1bdfba
-	db "@"
-; 0x169a2
+	text_far UnknownText_0x1bdfba
+	text_end
 
-.IllKeepItThanksText: ; 0x169a2
+.IllKeepItThanksText:
 	; Well then, I'll keep it. Thanks!
-	text_jump UnknownText_0x1bdfd1
-	db "@"
-; 0x169a7
+	text_far UnknownText_0x1bdfd1
+	text_end
 
-.PartyFullText: ; 0x169a7
+.PartyFullText:
 	; You have no room in your party. Come back later.
-	text_jump UnknownText_0x1bdff2
-	db "@"
-; 0x169ac
+	text_far UnknownText_0x1bdff2
+	text_end
 
-DayCare_GiveEgg: ; 169ac
+DayCare_GiveEgg:
 	ld a, [wEggMonLevel]
 	ld [wCurPartyLevel], a
 	ld hl, wPartyCount
@@ -580,18 +541,16 @@ DayCare_GiveEgg: ; 169ac
 .PartyFull:
 	scf
 	ret
-; 16a31
 
-DayCare_GetCurrentPartyMember: ; 16a31
+DayCare_GetCurrentPartyMember:
 	ld a, [wPartyCount]
 	dec a
 	call AddNTimes
 	ld d, h
 	ld e, l
 	ret
-; 16a3b
 
-DayCare_InitBreeding: ; 16a3b
+DayCare_InitBreeding:
 	ld a, [wDayCareLady]
 	bit DAYCARELADY_HAS_MON_F, a
 	ret z
@@ -599,7 +558,7 @@ DayCare_InitBreeding: ; 16a3b
 	bit DAYCAREMAN_HAS_MON_F, a
 	ret z
 	callfar CheckBreedmonCompatibility
-	ld a, [wd265]
+	ld a, [wBreedingCompatibility]
 	and a
 	ret z
 	inc a
@@ -612,9 +571,8 @@ DayCare_InitBreeding: ; 16a3b
 	jr c, .loop
 	ld [wStepsToEgg], a
 	jp .UselessJump
-; 16a66
 
-.UselessJump: ; 16a66
+.UselessJump:
 	xor a
 	ld hl, wEggMon
 	ld bc, wEggMonEnd - wEggMon
@@ -698,11 +656,11 @@ DayCare_InitBreeding: ; 16a3b
 	ld d, a
 	callfar CalcExpAtLevel
 	ld hl, wEggMonExp
-	ld a, [hMultiplicand]
+	ldh a, [hMultiplicand]
 	ld [hli], a
-	ld a, [hMultiplicand + 1]
+	ldh a, [hMultiplicand + 1]
 	ld [hli], a
-	ld a, [hMultiplicand + 2]
+	ldh a, [hMultiplicand + 2]
 	ld [hl], a
 	xor a
 	ld b, wEggMonDVs - wEggMonStatExp
@@ -788,8 +746,6 @@ DayCare_InitBreeding: ; 16a3b
 	ld a, [wCurPartyLevel]
 	ld [wEggMonLevel], a
 	ret
-; 16be0
 
-.String_EGG: ; 16be0
+.String_EGG:
 	db "EGG@"
-; 16be4

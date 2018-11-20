@@ -1,19 +1,18 @@
-NamesPointers:: ; 33ab
+NamesPointers::
 ; entries correspond to GetName constants (see constants/text_constants.asm)
 	dba PokemonNames        ; MON_NAME (not used; jumps to GetPokemonName)
 	dba MoveNames           ; MOVE_NAME
-	dbw 0, NULL             ; DUMMY_NAME
+	dba NULL                ; DUMMY_NAME
 	dba ItemNames           ; ITEM_NAME
-	dbw 0, wPartyMonOT       ; PARTY_OT_NAME
-	dbw 0, wOTPartyMonOT     ; ENEMY_OT_NAME
+	dbw 0, wPartyMonOT      ; PARTY_OT_NAME
+	dbw 0, wOTPartyMonOT    ; ENEMY_OT_NAME
 	dba TrainerClassNames   ; TRAINER_NAME
 	dbw 4, MoveDescriptions ; MOVE_DESC_NAME_BROKEN (wrong bank)
-; 33c3
 
-GetName:: ; 33c3
+GetName::
 ; Return name wCurSpecies from name list wNamedObjectTypeBuffer in wStringBuffer1.
 
-	ld a, [hROMBank]
+	ldh a, [hROMBank]
 	push af
 	push hl
 	push bc
@@ -24,7 +23,7 @@ GetName:: ; 33c3
 	jr nz, .NotPokeName
 
 	ld a, [wCurSpecies]
-	ld [wd265], a
+	ld [wNamedObjectIndexBuffer], a
 	call GetPokemonName
 	ld hl, MON_NAME_LENGTH
 	add hl, de
@@ -67,9 +66,8 @@ GetName:: ; 33c3
 	pop af
 	rst Bankswitch
 	ret
-; 3411
 
-GetNthString:: ; 3411
+GetNthString::
 ; Return the address of the
 ; ath string starting from hl.
 
@@ -87,9 +85,8 @@ GetNthString:: ; 3411
 	jr nz, .readChar
 	pop bc
 	ret
-; 3420
 
-GetBasePokemonName:: ; 3420
+GetBasePokemonName::
 ; Discards gender (Nidoran).
 
 	push hl
@@ -112,19 +109,17 @@ GetBasePokemonName:: ; 3420
 	pop hl
 	ret
 
-; 343b
+GetPokemonName::
+; Get Pokemon name for wNamedObjectIndexBuffer.
 
-GetPokemonName:: ; 343b
-; Get Pokemon name wd265.
-
-	ld a, [hROMBank]
+	ldh a, [hROMBank]
 	push af
 	push hl
 	ld a, BANK(PokemonNames)
 	rst Bankswitch
 
 ; Each name is ten characters
-	ld a, [wd265]
+	ld a, [wNamedObjectIndexBuffer]
 	dec a
 	ld d, 0
 	ld e, a
@@ -150,14 +145,13 @@ GetPokemonName:: ; 343b
 	pop af
 	rst Bankswitch
 	ret
-; 3468
 
-GetItemName:: ; 3468
-; Get item name wd265.
+GetItemName::
+; Get item name for wNamedObjectIndexBuffer.
 
 	push hl
 	push bc
-	ld a, [wd265]
+	ld a, [wNamedObjectIndexBuffer]
 
 	cp TM01
 	jr nc, .TM
@@ -174,15 +168,14 @@ GetItemName:: ; 3468
 	pop bc
 	pop hl
 	ret
-; 3487
 
-GetTMHMName:: ; 3487
-; Get TM/HM name by item id wd265.
+GetTMHMName::
+; Get TM/HM name for item wNamedObjectIndexBuffer.
 
 	push hl
 	push de
 	push bc
-	ld a, [wd265]
+	ld a, [wNamedObjectIndexBuffer]
 	push af
 
 ; TM/HM prefix
@@ -204,7 +197,7 @@ GetTMHMName:: ; 3487
 
 ; TM/HM number
 	push de
-	ld a, [wd265]
+	ld a, [wNamedObjectIndexBuffer]
 	ld c, a
 	callfar GetTMHMNumber
 	pop de
@@ -242,7 +235,7 @@ GetTMHMName:: ; 3487
 	ld [de], a
 
 	pop af
-	ld [wd265], a
+	ld [wNamedObjectIndexBuffer], a
 	pop bc
 	pop de
 	pop hl
@@ -257,11 +250,10 @@ GetTMHMName:: ; 3487
 	db "HM"
 .HMTextEnd:
 	db "@"
-; 34df
 
 INCLUDE "home/hm_moves.asm"
 
-GetMoveName:: ; 34f8
+GetMoveName::
 	push hl
 
 	ld a, MOVE_NAME
@@ -275,4 +267,3 @@ GetMoveName:: ; 34f8
 
 	pop hl
 	ret
-; 350c

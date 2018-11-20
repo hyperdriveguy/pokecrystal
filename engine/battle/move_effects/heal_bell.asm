@@ -1,11 +1,11 @@
-BattleCommand_HealBell: ; 35cc9
+BattleCommand_HealBell:
 ; healbell
 
 	ld a, BATTLE_VARS_SUBSTATUS1
 	call GetBattleVarAddr
 	res SUBSTATUS_NIGHTMARE, [hl]
 	ld de, wPartyMon1Status
-	ld a, [hBattleTurn]
+	ldh a, [hBattleTurn]
 	and a
 	jr z, .got_status
 	ld de, wOTPartyMon1Status
@@ -28,9 +28,7 @@ BattleCommand_HealBell: ; 35cc9
 	ld hl, BellChimedText
 	call StdBattleTextBox
 
-	ld a, [hBattleTurn]
+	ldh a, [hBattleTurn]
 	and a
 	jp z, CalcPlayerStats
 	jp CalcEnemyStats
-
-; 35d00

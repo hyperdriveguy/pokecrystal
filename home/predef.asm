@@ -1,9 +1,9 @@
-Predef:: ; 2d83
+Predef::
 ; Call predefined function a.
 ; Preserves bc, de, hl and f.
 
 	ld [wPredefID], a
-	ld a, [hROMBank]
+	ldh a, [hROMBank]
 	push af
 
 	ld a, BANK(GetPredefPointer)
@@ -39,7 +39,7 @@ Predef:: ; 2d83
 	ld a, h
 	ld [wPredefTemp], a
 	ld a, l
-	ld [wPredefTemp+1], a
+	ld [wPredefTemp + 1], a
 
 	pop hl
 	ld a, h
@@ -50,4 +50,3 @@ Predef:: ; 2d83
 	ld a, [wPredefTemp + 1]
 	ld l, a
 	ret
-; 2dba

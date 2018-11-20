@@ -1,8 +1,8 @@
-BattleCommand_Spikes: ; 37683
+BattleCommand_Spikes:
 ; spikes
 
 	ld hl, wEnemyScreens
-	ld a, [hBattleTurn]
+	ldh a, [hBattleTurn]
 	and a
 	jr z, .asm_3768e
 	ld hl, wPlayerScreens
@@ -24,4 +24,3 @@ BattleCommand_Spikes: ; 37683
 
 .failed
 	jp FailMove
-; 376a0

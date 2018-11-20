@@ -1,8 +1,8 @@
-Function_LoadOpponentTrainerAndPokemons: ; 1f8000
-	ld a, [rSVBK]
+Function_LoadOpponentTrainerAndPokemons:
+	ldh a, [rSVBK]
 	push af
 	ld a, BANK(wBT_OTTrainer)
-	ld [rSVBK], a
+	ldh [rSVBK], a
 
 	; Fill wBT_OTTrainer with zeros
 	xor a
@@ -19,11 +19,11 @@ Function_LoadOpponentTrainerAndPokemons: ; 1f8000
 	; Set wBT_OTTrainer as start address to write the following data to
 	ld de, wBT_OTTrainer
 
-	ld a, [hRandomAdd]
+	ldh a, [hRandomAdd]
 	ld b, a
 .resample ; loop to find a random trainer
 	call Random
-	ld a, [hRandomAdd]
+	ldh a, [hRandomAdd]
 	add b
 	ld b, a ; b contains the nr of the trainer
 if DEF(_CRYSTAL11)
@@ -87,12 +87,11 @@ endc
 	jr nz, .copy_bt_trainer_data_loop
 
 	pop af
-	ld [rSVBK], a
+	ldh [rSVBK], a
 
 	ret
 
-
-Function_LoadRandomBattleTowerMon: ; 1f8081
+Function_LoadRandomBattleTowerMon:
 	ld c, BATTLETOWER_PARTY_LENGTH
 .loop
 	push bc
@@ -105,14 +104,14 @@ Function_LoadRandomBattleTowerMon: ; 1f8081
 	ld a, [wBTChoiceOfLvlGroup]
 	dec a
 	ld hl, BattleTowerMons
-	ld bc, BattleTowerMons2 - BattleTowerMons1
+	ld bc, BattleTowerMons2 - BattleTowerMons1 ; size of one level group
 	call AddNTimes
 
-	ld a, [hRandomAdd]
+	ldh a, [hRandomAdd]
 	ld b, a
 .resample
 	call Random
-	ld a, [hRandomAdd]
+	ldh a, [hRandomAdd]
 	add b
 	ld b, a
 	maskbits BATTLETOWER_NUM_UNIQUE_MON
@@ -207,7 +206,6 @@ Function_LoadRandomBattleTowerMon: ; 1f8081
 	ld [sBTMonPrevTrainer3], a
 	call CloseSRAM
 	ret
-; 1f814e
 
 INCLUDE "data/battle_tower/classes.asm"
 

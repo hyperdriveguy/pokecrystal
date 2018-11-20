@@ -1,4 +1,4 @@
-BattleCommand_Mimic: ; 36f46
+BattleCommand_Mimic:
 ; mimic
 
 	call ClearLastMove
@@ -7,7 +7,7 @@ BattleCommand_Mimic: ; 36f46
 	and a
 	jr nz, .fail
 	ld hl, wBattleMonMoves
-	ld a, [hBattleTurn]
+	ldh a, [hBattleTurn]
 	and a
 	jr z, .player_turn
 	ld hl, wEnemyMonMoves
@@ -48,5 +48,3 @@ BattleCommand_Mimic: ; 36f46
 
 .fail
 	jp FailMimic
-
-; 36f9d

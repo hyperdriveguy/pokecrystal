@@ -1,7 +1,6 @@
 MANIA_OT_ID EQU 00518
 
-GiveShuckle: ; 7305
-
+GiveShuckle:
 ; Adding to the party.
 	xor a
 	ld [wMonType], a
@@ -55,8 +54,8 @@ GiveShuckle: ; 7305
 	call CopyName2
 
 ; Engine flag for this event.
-	ld hl, wDailyFlags
-	set DAILYFLAGS_GOT_SHUCKIE_TODAY_F, [hl]
+	ld hl, wDailyFlags1
+	set DAILYFLAGS1_GOT_SHUCKIE_TODAY_F, [hl]
 	ld a, 1
 	ld [wScriptVar], a
 	ret
@@ -71,7 +70,7 @@ SpecialShuckleOT:
 SpecialShuckleNick:
 	db "SHUCKIE@"
 
-ReturnShuckle: ; 737e
+ReturnShuckle:
 	farcall SelectMonFromParty
 	jr c, .refused
 

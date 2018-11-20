@@ -1,15 +1,15 @@
-GetPokeBallWobble: ; f971 (3:7971)
+GetPokeBallWobble:
 ; Returns whether a Poke Ball will wobble in the catch animation.
 ; Whether a Pokemon is caught is determined beforehand.
 
 	push de
 
-	ld a, [rSVBK]
+	ldh a, [rSVBK]
 	ld d, a
 	push de
 
 	ld a, BANK(wBuffer2)
-	ld [rSVBK], a
+	ldh [rSVBK], a
 
 	ld a, [wBuffer2]
 	inc a
@@ -54,7 +54,7 @@ GetPokeBallWobble: ; f971 (3:7971)
 	pop de
 	ld e, a
 	ld a, d
-	ld [rSVBK], a
+	ldh [rSVBK], a
 	ld a, e
 	pop de
 	ret

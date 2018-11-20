@@ -1,6 +1,6 @@
-ScrollingMenu:: ; 350c
+ScrollingMenu::
 	call CopyMenuData
-	ld a, [hROMBank]
+	ldh a, [hROMBank]
 	push af
 
 	ld a, BANK(_ScrollingMenu)
@@ -15,16 +15,14 @@ ScrollingMenu:: ; 350c
 
 	ld a, [wMenuJoypad]
 	ret
-; 3524
 
-.UpdatePalettes: ; 3524
+.UpdatePalettes:
 	ld hl, wVramState
 	bit 0, [hl]
 	jp nz, UpdateTimePals
 	jp SetPalettes
-; 352f
 
-InitScrollingMenu:: ; 352f
+InitScrollingMenu::
 	ld a, [wMenuBorderTopCoord]
 	dec a
 	ld b, a
@@ -41,25 +39,23 @@ InitScrollingMenu:: ; 352f
 	call Coord2Tile
 	pop bc
 	jp TextBox
-; 354b
 
-JoyTextDelay_ForcehJoyDown:: ; 354b joypad
+JoyTextDelay_ForcehJoyDown::
 	call DelayFrame
 
-	ld a, [hInMenu]
+	ldh a, [hInMenu]
 	push af
 	ld a, $1
-	ld [hInMenu], a
+	ldh [hInMenu], a
 	call JoyTextDelay
 	pop af
-	ld [hInMenu], a
+	ldh [hInMenu], a
 
-	ld a, [hJoyLast]
+	ldh a, [hJoyLast]
 	and D_RIGHT + D_LEFT + D_UP + D_DOWN
 	ld c, a
-	ld a, [hJoyPressed]
+	ldh a, [hJoyPressed]
 	and A_BUTTON + B_BUTTON + SELECT + START
 	or c
 	ld c, a
 	ret
-; 3567

@@ -1,4 +1,4 @@
-BattleCommand_LeechSeed: ; 36f9d
+BattleCommand_LeechSeed:
 ; leechseed
 	ld a, [wAttackMissed]
 	and a
@@ -7,7 +7,7 @@ BattleCommand_LeechSeed: ; 36f9d
 	jr nz, .evaded
 
 	ld de, wEnemyMonType1
-	ld a, [hBattleTurn]
+	ldh a, [hBattleTurn]
 	and a
 	jr z, .ok
 	ld de, wBattleMonType1
@@ -38,5 +38,3 @@ BattleCommand_LeechSeed: ; 36f9d
 	call AnimateFailedMove
 	ld hl, EvadedText
 	jp StdBattleTextBox
-
-; 36fe1

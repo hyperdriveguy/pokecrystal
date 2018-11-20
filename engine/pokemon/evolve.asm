@@ -1,4 +1,4 @@
-EvolvePokemon: ; 421d8
+EvolvePokemon:
 	ld hl, wEvolvableFlags
 	xor a
 	ld [hl], a
@@ -6,7 +6,7 @@ EvolvePokemon: ; 421d8
 	ld c, a
 	ld b, SET_FLAG
 	call EvoFlagAction
-EvolveAfterBattle: ; 421e6
+EvolveAfterBattle:
 	xor a
 	ld [wMonTriedToEvolve], a
 	dec a
@@ -87,7 +87,6 @@ EvolveAfterBattle_MasterLoop:
 	cp EVOLVE_HAPPINESS
 	jr z, .happiness
 
-
 ; EVOLVE_STAT
 	ld a, [wTempMonLevel]
 	cp [hl]
@@ -100,7 +99,7 @@ EvolveAfterBattle_MasterLoop:
 	ld de, wTempMonAttack
 	ld hl, wTempMonDefense
 	ld c, 2
-	call StringCmp
+	call CompareBytes
 	ld a, ATK_EQ_DEF
 	jr z, .got_tyrogue_evo
 	ld a, ATK_LT_DEF
@@ -115,7 +114,6 @@ EvolveAfterBattle_MasterLoop:
 
 	inc hl
 	jr .proceed
-
 
 .happiness
 	ld a, [wTempMonHappiness]
@@ -143,7 +141,6 @@ EvolveAfterBattle_MasterLoop:
 	jp z, .dont_evolve_3
 	jr .proceed
 
-
 .trade
 	ld a, [wLinkMode]
 	and a
@@ -169,7 +166,6 @@ EvolveAfterBattle_MasterLoop:
 	ld [wTempMonItem], a
 	jr .proceed
 
-
 .item
 	ld a, [hli]
 	ld b, a
@@ -184,7 +180,6 @@ EvolveAfterBattle_MasterLoop:
 	and a
 	jp nz, .dont_evolve_3
 	jr .proceed
-
 
 .level
 	ld a, [hli]
@@ -216,13 +211,13 @@ EvolveAfterBattle_MasterLoop:
 	call DelayFrames
 
 	xor a
-	ld [hBGMapMode], a
+	ldh [hBGMapMode], a
 	hlcoord 0, 0
 	lb bc, 12, 20
 	call ClearBox
 
 	ld a, $1
-	ld [hBGMapMode], a
+	ldh [hBGMapMode], a
 	call ClearSprites
 
 	farcall EvolutionAnimation
@@ -241,7 +236,7 @@ EvolveAfterBattle_MasterLoop:
 	ld [wCurSpecies], a
 	ld [wTempMonSpecies], a
 	ld [wEvolutionNewSpecies], a
-	ld [wd265], a
+	ld [wNamedObjectIndexBuffer], a
 	call GetPokemonName
 
 	push hl
@@ -298,15 +293,15 @@ EvolveAfterBattle_MasterLoop:
 	call CopyBytes
 
 	ld a, [wCurSpecies]
-	ld [wd265], a
+	ld [wTempSpecies], a
 	xor a
 	ld [wMonType], a
 	call LearnLevelMoves
-	ld a, [wd265]
+	ld a, [wTempSpecies]
 	dec a
 	call SetSeenAndCaughtMon
 
-	ld a, [wd265]
+	ld a, [wTempSpecies]
 	cp UNOWN
 	jr nz, .skip_unown
 
@@ -323,7 +318,6 @@ EvolveAfterBattle_MasterLoop:
 	ld l, e
 	ld h, d
 	jp EvolveAfterBattle_MasterLoop
-; 423f8
 
 .dont_evolve_1
 	inc hl
@@ -349,13 +343,12 @@ EvolveAfterBattle_MasterLoop:
 	and a
 	call nz, RestartMapMusic
 	ret
-; 42414
 
-UpdateSpeciesNameIfNotNicknamed: ; 42414
+UpdateSpeciesNameIfNotNicknamed:
 	ld a, [wCurSpecies]
 	push af
 	ld a, [wBaseDexNo]
-	ld [wd265], a
+	ld [wNamedObjectIndexBuffer], a
 	call GetPokemonName
 	pop af
 	ld [wCurSpecies], a
@@ -376,23 +369,21 @@ UpdateSpeciesNameIfNotNicknamed: ; 42414
 	call AddNTimes
 	push hl
 	ld a, [wCurSpecies]
-	ld [wd265], a
+	ld [wNamedObjectIndexBuffer], a
 	call GetPokemonName
 	ld hl, wStringBuffer1
 	pop de
 	ld bc, MON_NAME_LENGTH
 	jp CopyBytes
-; 42454
 
-CancelEvolution: ; 42454
+CancelEvolution:
 	ld hl, Text_StoppedEvolving
 	call PrintText
 	call ClearTileMap
 	pop hl
 	jp EvolveAfterBattle_MasterLoop
-; 42461
 
-IsMonHoldingEverstone: ; 42461
+IsMonHoldingEverstone:
 	push hl
 	ld a, [wCurPartyMon]
 	ld hl, wPartyMon1Item
@@ -402,35 +393,29 @@ IsMonHoldingEverstone: ; 42461
 	cp EVERSTONE
 	pop hl
 	ret
-; 42473
 
-Text_CongratulationsYourPokemon: ; 0x42473
+Text_CongratulationsYourPokemon:
 	; Congratulations! Your @ @
-	text_jump UnknownText_0x1c4b92
-	db "@"
-; 0x42478
+	text_far UnknownText_0x1c4b92
+	text_end
 
-Text_EvolvedIntoPKMN: ; 0x42478
+Text_EvolvedIntoPKMN:
 	; evolved into @ !
-	text_jump UnknownText_0x1c4baf
-	db "@"
-; 0x4247d
+	text_far UnknownText_0x1c4baf
+	text_end
 
-Text_StoppedEvolving: ; 0x4247d
+Text_StoppedEvolving:
 	; Huh? @ stopped evolving!
-	text_jump UnknownText_0x1c4bc5
-	db "@"
-; 0x42482
+	text_far UnknownText_0x1c4bc5
+	text_end
 
-Text_WhatEvolving: ; 0x42482
+Text_WhatEvolving:
 	; What? @ is evolving!
-	text_jump UnknownText_0x1c4be3
-	db "@"
-; 0x42487
+	text_far UnknownText_0x1c4be3
+	text_end
 
-
-LearnLevelMoves: ; 42487
-	ld a, [wd265]
+LearnLevelMoves:
+	ld a, [wTempSpecies]
 	ld [wCurPartySpecies], a
 	dec a
 	ld b, 0
@@ -481,7 +466,7 @@ LearnLevelMoves: ; 42487
 .learn
 	ld a, d
 	ld [wPutativeTMHMMove], a
-	ld [wd265], a
+	ld [wNamedObjectIndexBuffer], a
 	call GetMoveName
 	call CopyName1
 	predef LearnMove
@@ -490,12 +475,10 @@ LearnLevelMoves: ; 42487
 
 .done
 	ld a, [wCurPartySpecies]
-	ld [wd265], a
+	ld [wTempSpecies], a
 	ret
-; 424e1
 
-
-FillMoves: ; 424e1
+FillMoves:
 ; Fill in moves at de for wCurPartySpecies at wCurPartyLevel
 
 	push hl
@@ -604,9 +587,8 @@ FillMoves: ; 424e1
 	pop de
 	pop hl
 	ret
-; 4256e
 
-ShiftMoves: ; 4256e
+ShiftMoves:
 	ld c, NUM_MOVES - 1
 .loop
 	inc de
@@ -615,18 +597,15 @@ ShiftMoves: ; 4256e
 	dec c
 	jr nz, .loop
 	ret
-; 42577
 
-
-EvoFlagAction: ; 42577
+EvoFlagAction:
 	push de
 	ld d, $0
 	predef SmallFarFlagAction
 	pop de
 	ret
-; 42581
 
-GetPreEvolution: ; 42581
+GetPreEvolution:
 ; Find the first mon to evolve into wCurPartySpecies.
 
 ; Return carry and the new species in wCurPartySpecies
@@ -673,4 +652,3 @@ GetPreEvolution: ; 42581
 	ld [wCurPartySpecies], a
 	scf
 	ret
-; 425b1

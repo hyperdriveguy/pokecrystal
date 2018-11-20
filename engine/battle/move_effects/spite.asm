@@ -1,4 +1,4 @@
-BattleCommand_Spite: ; 35c0f
+BattleCommand_Spite:
 ; spite
 
 	ld a, [wAttackMissed]
@@ -6,7 +6,7 @@ BattleCommand_Spite: ; 35c0f
 	jp nz, .failed
 	ld bc, PARTYMON_STRUCT_LENGTH ; ????
 	ld hl, wEnemyMonMoves
-	ld a, [hBattleTurn]
+	ldh a, [hBattleTurn]
 	and a
 	jr z, .got_moves
 	ld hl, wBattleMonMoves
@@ -24,7 +24,7 @@ BattleCommand_Spite: ; 35c0f
 	ld a, [hli]
 	cp b
 	jr nz, .loop
-	ld [wTypeMatchup], a
+	ld [wNamedObjectIndexBuffer], a
 	dec hl
 	ld b, 0
 	push bc
@@ -63,7 +63,7 @@ BattleCommand_Spite: ; 35c0f
 	call GetBattleVar
 	bit SUBSTATUS_TRANSFORMED, a
 	jr nz, .transformed
-	ld a, [hBattleTurn]
+	ldh a, [hBattleTurn]
 	and a
 	jr nz, .not_wildmon
 	ld a, [wBattleMode]
@@ -78,11 +78,9 @@ BattleCommand_Spite: ; 35c0f
 	call AnimateCurrentMove
 	pop de
 	ld a, d
-	ld [wTypeMatchup], a
+	ld [wDeciramBuffer], a
 	ld hl, SpiteEffectText
 	jp StdBattleTextBox
 
 .failed
 	jp PrintDidntAffect2
-
-; 35c94

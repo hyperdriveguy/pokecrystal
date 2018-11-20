@@ -1,4 +1,4 @@
-GivePokerusAndConvertBerries: ; 2ed44
+GivePokerusAndConvertBerries:
 	call ConvertBerriesToBerryJuice
 	ld hl, wPartyMon1PokerusStatus
 	ld a, [wPartyCount]
@@ -22,10 +22,10 @@ GivePokerusAndConvertBerries: ; 2ed44
 	bit STATUSFLAGS2_REACHED_GOLDENROD_F, [hl]
 	ret z
 	call Random
-	ld a, [hRandomAdd]
+	ldh a, [hRandomAdd]
 	and a
 	ret nz
-	ld a, [hRandomSub]
+	ldh a, [hRandomSub]
 	cp $3
 	ret nc                 ; 3/65536 chance (00 00, 00 01 or 00 02)
 	ld a, [wPartyCount]
@@ -121,7 +121,7 @@ GivePokerusAndConvertBerries: ; 2ed44
 	ld [hl], a
 	ret
 
-ConvertBerriesToBerryJuice: ; 2ede6
+ConvertBerriesToBerryJuice:
 ; If we haven't been to Goldenrod City at least once,
 ; prevent Shuckle from turning held Berry into Berry Juice.
 	ld hl, wStatusFlags2

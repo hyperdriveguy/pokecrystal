@@ -1,7 +1,12 @@
 ; wInputType:: ; c2c7
 AUTO_INPUT EQU $ff
 
-; wCurrentDexMode:: ; c7d4
+; wDebugFlags:: ; c2cc
+	const_def
+	const DEBUG_BATTLE_F
+	const DEBUG_FIELD_F
+
+; wCurDexMode:: ; c7d4
 	const_def
 	const DEXMODE_NEW
 	const DEXMODE_OLD
@@ -20,17 +25,17 @@ AUTO_INPUT EQU $ff
 GAMETIMERPAUSE_TIMER_PAUSED_F EQU 0
 GAMETIMERPAUSE_MOBILE_7_F     EQU 7
 
-; wOptions:: (bits 4-7) ; cfcc
+; wOptions:: ; cfcc
+TEXT_DELAY_MASK EQU %111
 	const_def 4
 	const NO_TEXT_SCROLL ; 4
 	const STEREO         ; 5
 	const BATTLE_SHIFT   ; 6
 	const BATTLE_SCENE   ; 7
 
-; wOptions:: (bits 0-2) ; cfcc
-TEXT_DELAY_FAST EQU 1
-TEXT_DELAY_MED  EQU 3
-TEXT_DELAY_SLOW EQU 5
+TEXT_DELAY_FAST EQU %001 ; 1
+TEXT_DELAY_MED  EQU %011 ; 3
+TEXT_DELAY_SLOW EQU %101 ; 5
 
 ; wTextBoxFrame:: ; cfce
 	const_def
@@ -146,7 +151,7 @@ SPAWN_RED   EQU 2
 
 ; wMapObjects:: ; d71e
 PLAYER_OBJECT EQU 0
-NUM_OBJECTS   EQU $10
+NUM_OBJECTS   EQU 16
 
 ; wStatusFlags:: ; d84c
 	const_def
@@ -232,27 +237,27 @@ CELEBIEVENT_FOREST_IS_RESTLESS_F EQU 2
 	const BIKEFLAGS_ALWAYS_ON_BIKE_F  ; 1
 	const BIKEFLAGS_DOWNHILL_F        ; 2
 
-; wDailyFlags:: ; dc1e
+; wDailyFlags1:: ; dc1e
 	const_def
-	const DAILYFLAGS_KURT_MAKING_BALLS_F             ; 0
-	const DAILYFLAGS_BUG_CONTEST_F                   ; 1
-	const DAILYFLAGS_FISH_SWARM_F                    ; 2
-	const DAILYFLAGS_TIME_CAPSULE_F                  ; 3
-	const DAILYFLAGS_ALL_FRUIT_TREES_F               ; 4
-	const DAILYFLAGS_GOT_SHUCKIE_TODAY_F             ; 5
-	const DAILYFLAGS_GOLDENROD_UNDERGROUND_BARGAIN_F ; 6
-	const DAILYFLAGS_TRAINER_HOUSE_F                 ; 7
+	const DAILYFLAGS1_KURT_MAKING_BALLS_F             ; 0
+	const DAILYFLAGS1_BUG_CONTEST_F                   ; 1
+	const DAILYFLAGS1_FISH_SWARM_F                    ; 2
+	const DAILYFLAGS1_TIME_CAPSULE_F                  ; 3
+	const DAILYFLAGS1_ALL_FRUIT_TREES_F               ; 4
+	const DAILYFLAGS1_GOT_SHUCKIE_TODAY_F             ; 5
+	const DAILYFLAGS1_GOLDENROD_UNDERGROUND_BARGAIN_F ; 6
+	const DAILYFLAGS1_TRAINER_HOUSE_F                 ; 7
 
-; wWeeklyFlags:: ; dc1f
+; wDailyFlags2:: ; dc1f
 	const_def
-	const WEEKLYFLAGS_MT_MOON_SQUARE_CLEFAIRY_F ; 0
-	const WEEKLYFLAGS_UNION_CAVE_LAPRAS_F ; 1
-	const WEEKLYFLAGS_GOLDENROD_UNDERGROUND_GOT_HAIRCUT_F ; 2
-	const WEEKLYFLAGS_GOLDENROD_DEPT_STORE_TM27_RETURN_F ; 3
-	const WEEKLYFLAGS_DAISYS_GROOMING_F ; 4
-	const WEEKLYFLAGS_INDIGO_PLATEAU_RIVAL_FIGHT_F ; 5
-	const WEEKLYFLAGS_DAILY_MOVE_TUTOR_F ; 6
-	const WEEKLYFLAGS_BUENAS_PASSWORD_F ; 7
+	const DAILYFLAGS2_MT_MOON_SQUARE_CLEFAIRY_F           ; 0
+	const DAILYFLAGS2_UNION_CAVE_LAPRAS_F                 ; 1
+	const DAILYFLAGS2_GOLDENROD_UNDERGROUND_GOT_HAIRCUT_F ; 2
+	const DAILYFLAGS2_GOLDENROD_DEPT_STORE_TM27_RETURN_F  ; 3
+	const DAILYFLAGS2_DAISYS_GROOMING_F                   ; 4
+	const DAILYFLAGS2_INDIGO_PLATEAU_RIVAL_FIGHT_F        ; 5
+	const DAILYFLAGS2_MOVE_TUTOR_F                        ; 6
+	const DAILYFLAGS2_BUENAS_PASSWORD_F                   ; 7
 
 ; wSwarmFlags:: ; dc20
 	const_def

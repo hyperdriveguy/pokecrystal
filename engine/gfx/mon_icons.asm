@@ -1,4 +1,4 @@
-LoadOverworldMonIcon: ; 8e82b
+LoadOverworldMonIcon:
 	ld a, e
 	call ReadMonMenuIcon
 	ld l, a
@@ -12,9 +12,8 @@ LoadOverworldMonIcon: ; 8e82b
 	ld b, BANK(Icons)
 	ld c, 8
 	ret
-; 8e83f
 
-LoadMenuMonIcon: ; 8e83f
+LoadMenuMonIcon:
 	push hl
 	push de
 	push bc
@@ -23,9 +22,8 @@ LoadMenuMonIcon: ; 8e83f
 	pop de
 	pop hl
 	ret
-; 8e849
 
-.LoadIcon: ; 8e849
+.LoadIcon:
 	ld d, 0
 	ld hl, .Jumptable
 	add hl, de
@@ -34,27 +32,26 @@ LoadMenuMonIcon: ; 8e83f
 	ld h, [hl]
 	ld l, a
 	jp hl
-; 8e854
 
+.Jumptable:
+; entries correspond to MONICON_* constants
+	dw PartyMenu_InitAnimatedMonIcon    ; MONICON_PARTYMENU
+	dw NamingScreen_InitAnimatedMonIcon ; MONICON_NAMINGSCREEN
+	dw MoveList_InitAnimatedMonIcon     ; MONICON_MOVES
+	dw Trade_LoadMonIconGFX             ; MONICON_TRADE
+	dw Mobile_InitAnimatedMonIcon       ; MONICON_MOBILE1
+	dw Mobile_InitPartyMenuBGPal71      ; MONICON_MOBILE2
+	dw .GetPartyMenuMonIcon             ; MONICON_UNUSED
 
-.Jumptable: ; 8e854 (23:6854)
-	dw PartyMenu_InitAnimatedMonIcon ; party menu
-	dw NamingScreen_InitAnimatedMonIcon ; naming screen
-	dw MoveList_InitAnimatedMonIcon ; moves (?)
-	dw Trade_LoadMonIconGFX ; trade
-	dw Mobile_InitAnimatedMonIcon ; mobile
-	dw Mobile_InitPartyMenuBGPal71 ; mobile
-	dw .GetPartyMenuMonIcon ; unused
-
-.GetPartyMenuMonIcon: ; 8e862 (23:6862)
+.GetPartyMenuMonIcon:
 	call InitPartyMenuIcon
 	call .GetPartyMonItemGFX
 	call SetPartyMonIconAnimSpeed
 	ret
 
-.GetPartyMonItemGFX: ; 8e86c (23:686c)
+.GetPartyMonItemGFX:
 	push bc
-	ld a, [hObjectStructIndexBuffer]
+	ldh a, [hObjectStructIndexBuffer]
 	ld hl, wPartyMon1Item
 	ld bc, PARTYMON_STRUCT_LENGTH
 	call AddNTimes
@@ -69,21 +66,21 @@ LoadMenuMonIcon: ; 8e83f
 	pop bc
 	pop hl
 	jr c, .not_mail
-	ld a, $6
+	ld a, $06
 	jr .got_tile
 .not_mail
-	ld a, $5
-	; jr .got_tile
+	ld a, $05
+	; fallthrough
 
 .no_item
-	ld a, $4
+	ld a, $04
 .got_tile
 	ld hl, SPRITEANIMSTRUCT_FRAMESET_ID
 	add hl, bc
 	ld [hl], a
 	ret
 
-Mobile_InitAnimatedMonIcon: ; 8e898 (23:6898)
+Mobile_InitAnimatedMonIcon:
 	call PartyMenu_InitAnimatedMonIcon
 	ld hl, SPRITEANIMSTRUCT_ANIM_SEQ_ID
 	add hl, bc
@@ -99,7 +96,7 @@ Mobile_InitAnimatedMonIcon: ; 8e898 (23:6898)
 	ld [hl], a
 	ret
 
-Mobile_InitPartyMenuBGPal71: ; 8e8b1 (23:68b1)
+Mobile_InitPartyMenuBGPal71:
 	call InitPartyMenuIcon
 	call SetPartyMonIconAnimSpeed
 	ld hl, SPRITEANIMSTRUCT_ANIM_SEQ_ID
@@ -120,15 +117,15 @@ Mobile_InitPartyMenuBGPal71: ; 8e8b1 (23:68b1)
 	ld [wc608 + 1], a
 	ret
 
-PartyMenu_InitAnimatedMonIcon: ; 8e8d5 (23:68d5)
+PartyMenu_InitAnimatedMonIcon:
 	call InitPartyMenuIcon
 	call .SpawnItemIcon
 	call SetPartyMonIconAnimSpeed
 	ret
 
-.SpawnItemIcon: ; 8e8df (23:68df)
+.SpawnItemIcon:
 	push bc
-	ld a, [hObjectStructIndexBuffer]
+	ldh a, [hObjectStructIndexBuffer]
 	ld hl, wPartyMon1Item
 	ld bc, PARTYMON_STRUCT_LENGTH
 	call AddNTimes
@@ -154,19 +151,19 @@ PartyMenu_InitAnimatedMonIcon: ; 8e8d5 (23:68d5)
 	ld [hl], a
 	ret
 
-InitPartyMenuIcon: ; 8e908 (23:6908)
+InitPartyMenuIcon:
 	ld a, [wCurIconTile]
 	push af
-	ld a, [hObjectStructIndexBuffer]
+	ldh a, [hObjectStructIndexBuffer]
 	ld hl, wPartySpecies
 	ld e, a
-	ld d, $0
+	ld d, 0
 	add hl, de
 	ld a, [hl]
 	call ReadMonMenuIcon
 	ld [wCurIcon], a
 	call GetMemIconGFX
-	ld a, [hObjectStructIndexBuffer]
+	ldh a, [hObjectStructIndexBuffer]
 ; y coord
 	add a
 	add a
@@ -185,9 +182,9 @@ InitPartyMenuIcon: ; 8e908 (23:6908)
 	ld [hl], a
 	ret
 
-SetPartyMonIconAnimSpeed: ; 8e936 (23:6936)
+SetPartyMonIconAnimSpeed:
 	push bc
-	ld a, [hObjectStructIndexBuffer]
+	ldh a, [hObjectStructIndexBuffer]
 	ld b, a
 	call .getspeed
 	ld a, b
@@ -202,7 +199,7 @@ SetPartyMonIconAnimSpeed: ; 8e936 (23:6936)
 	ld [hl], a
 	ret
 
-.getspeed ; 8e94c (23:694c)
+.getspeed
 	farcall PlacePartymonHPBar
 	call GetHPPal
 	ld e, d
@@ -211,16 +208,14 @@ SetPartyMonIconAnimSpeed: ; 8e936 (23:6936)
 	add hl, de
 	ld b, [hl]
 	ret
-; 8e95e (23:695e)
 
-.speeds ; 8e95e
+.speeds
 	db $00 ; HP_GREEN
 	db $40 ; HP_YELLOW
 	db $80 ; HP_RED
-; 8e961
 
-NamingScreen_InitAnimatedMonIcon: ; 8e961 (23:6961)
-	ld a, [wd265]
+NamingScreen_InitAnimatedMonIcon:
+	ld a, [wTempIconSpecies]
 	call ReadMonMenuIcon
 	ld [wCurIcon], a
 	xor a
@@ -233,8 +228,8 @@ NamingScreen_InitAnimatedMonIcon: ; 8e961 (23:6961)
 	ld [hl], SPRITE_ANIM_SEQ_NULL
 	ret
 
-MoveList_InitAnimatedMonIcon: ; 8e97d (23:697d)
-	ld a, [wd265]
+MoveList_InitAnimatedMonIcon:
+	ld a, [wTempIconSpecies]
 	call ReadMonMenuIcon
 	ld [wCurIcon], a
 	xor a
@@ -248,8 +243,8 @@ MoveList_InitAnimatedMonIcon: ; 8e97d (23:697d)
 	ld [hl], SPRITE_ANIM_SEQ_NULL
 	ret
 
-Trade_LoadMonIconGFX: ; 8e99a (23:699a)
-	ld a, [wd265]
+Trade_LoadMonIconGFX:
+	ld a, [wTempIconSpecies]
 	call ReadMonMenuIcon
 	ld [wCurIcon], a
 	ld a, $62
@@ -257,43 +252,39 @@ Trade_LoadMonIconGFX: ; 8e99a (23:699a)
 	call GetMemIconGFX
 	ret
 
-GetSpeciesIcon: ; 8e9ac
+GetSpeciesIcon:
 ; Load species icon into VRAM at tile a
 	push de
-	ld a, [wd265]
+	ld a, [wTempIconSpecies]
 	call ReadMonMenuIcon
 	ld [wCurIcon], a
 	pop de
 	ld a, e
 	call GetIconGFX
 	ret
-; 8e9bc
 
-
-FlyFunction_GetMonIcon: ; 8e9bc (23:69bc)
+FlyFunction_GetMonIcon:
 	push de
-	ld a, [wd265]
+	ld a, [wTempIconSpecies]
 	call ReadMonMenuIcon
 	ld [wCurIcon], a
 	pop de
 	ld a, e
 	call GetIcon_a
 	ret
-; 8e9cc (23:69cc)
 
-Unreferenced_GetMonIcon2: ; 8e9cc
+Unreferenced_GetMonIcon2:
 	push de
-	ld a, [wd265]
+	ld a, [wTempIconSpecies]
 	call ReadMonMenuIcon
 	ld [wCurIcon], a
 	pop de
 	call GetIcon_de
 	ret
-; 8e9db
 
-GetMemIconGFX: ; 8e9db (23:69db)
+GetMemIconGFX:
 	ld a, [wCurIconTile]
-GetIconGFX: ; 8e9de
+GetIconGFX:
 	call GetIcon_a
 	ld de, 8 tiles
 	add hl, de
@@ -308,20 +299,19 @@ GetIconGFX: ; 8e9de
 HeldItemIcons:
 INCBIN "gfx/icons/mail.2bpp"
 INCBIN "gfx/icons/item.2bpp"
-; 8ea17
 
-GetIcon_de: ; 8ea17
+GetIcon_de:
 ; Load icon graphics into VRAM starting from tile de.
 	ld l, e
 	ld h, d
 	jr GetIcon
 
-GetIcon_a: ; 8ea1b
+GetIcon_a:
 ; Load icon graphics into VRAM starting from tile a.
 	ld l, a
 	ld h, 0
 
-GetIcon: ; 8ea1e
+GetIcon:
 ; Load icon graphics into VRAM starting from tile hl.
 
 ; One tile is 16 bytes long.
@@ -352,16 +342,14 @@ endr
 
 	pop hl
 	ret
-; 8ea3f
 
-GetGFXUnlessMobile: ; 8ea3f
+GetGFXUnlessMobile:
 	ld a, [wLinkMode]
 	cp LINK_MOBILE
 	jp nz, Request2bpp
 	jp Get2bpp_2
-; 8ea4a
 
-FreezeMonIcons: ; 8ea4a
+FreezeMonIcons:
 	ld hl, wSpriteAnimationStructs
 	ld e, PARTY_LENGTH
 	ld a, [wMenuCursorY]
@@ -393,9 +381,8 @@ FreezeMonIcons: ; 8ea4a
 	dec e
 	jr nz, .loop
 	ret
-; 8ea71
 
-UnfreezeMonIcons: ; 8ea71
+UnfreezeMonIcons:
 	ld hl, wSpriteAnimationStructs
 	ld e, PARTY_LENGTH
 .loop
@@ -415,9 +402,8 @@ UnfreezeMonIcons: ; 8ea71
 	dec e
 	jr nz, .loop
 	ret
-; 8ea8c (23:6a8c)
 
-HoldSwitchmonIcon: ; 8ea8c
+HoldSwitchmonIcon:
 	ld hl, wSpriteAnimationStructs
 	ld e, PARTY_LENGTH
 	ld a, [wSwitchMon]
@@ -448,7 +434,7 @@ HoldSwitchmonIcon: ; 8ea8c
 	jr nz, .loop
 	ret
 
-ReadMonMenuIcon: ; 8eab3
+ReadMonMenuIcon:
 	cp EGG
 	jr z, .egg
 	dec a
@@ -461,8 +447,6 @@ ReadMonMenuIcon: ; 8eab3
 .egg
 	ld a, ICON_EGG
 	ret
-; 8eac4
-
 
 INCLUDE "data/pokemon/menu_icons.asm"
 

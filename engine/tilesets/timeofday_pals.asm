@@ -1,18 +1,16 @@
-DummyPredef35: ; 8c000
+DummyPredef35:
 DummyPredef36:
 	ret
 
-UpdateTimeOfDayPal:: ; 8c001
+UpdateTimeOfDayPal::
 	call UpdateTime
 	ld a, [wTimeOfDay]
 	ld [wCurTimeOfDay], a
 	call GetTimePalette
 	ld [wTimeOfDayPal], a
 	ret
-; 8c011
 
-
-_TimeOfDayPals:: ; 8c011
+_TimeOfDayPals::
 ; return carry if pals are changed
 
 ; forced pals?
@@ -45,11 +43,11 @@ _TimeOfDayPals:: ; 8c011
 	ld hl, wBGPals1 palette PAL_BG_TEXT
 
 ; save wram bank
-	ld a, [rSVBK]
+	ldh a, [rSVBK]
 	ld b, a
 
 	ld a, BANK(wBGPals1)
-	ld [rSVBK], a
+	ldh [rSVBK], a
 
 ; push palette
 	ld c, NUM_PAL_COLORS
@@ -64,23 +62,21 @@ _TimeOfDayPals:: ; 8c011
 
 ; restore wram bank
 	ld a, b
-	ld [rSVBK], a
-
+	ldh [rSVBK], a
 
 ; update sgb pals
 	ld b, SCGB_MAPPALS
 	call GetSGBLayout
 
-
 ; restore bg palette 7
 	ld hl, wOBPals1 - 1 ; last byte in wBGPals1
 
 ; save wram bank
-	ld a, [rSVBK]
+	ldh a, [rSVBK]
 	ld d, a
 
 	ld a, BANK(wOBPals1)
-	ld [rSVBK], a
+	ldh [rSVBK], a
 
 ; pop palette
 	ld e, NUM_PAL_COLORS
@@ -95,7 +91,7 @@ _TimeOfDayPals:: ; 8c011
 
 ; restore wram bank
 	ld a, d
-	ld [rSVBK], a
+	ldh [rSVBK], a
 
 ; update palettes
 	call _UpdateTimePals
@@ -109,34 +105,29 @@ _TimeOfDayPals:: ; 8c011
 ; no change occurred
 	and a
 	ret
-; 8c070
 
-
-_UpdateTimePals:: ; 8c070
+_UpdateTimePals::
 	ld c, $9 ; normal
 	call GetTimePalFade
 	call DmgToCgbTimePals
 	ret
-; 8c079
 
-FadeInPalettes:: ; 8c079
+FadeInPalettes::
 	ld c, $12
 	call GetTimePalFade
 	ld b, $4
 	call ConvertTimePalsDecHL
 	ret
-; 8c084
 
-FadeOutPalettes:: ; 8c084
+FadeOutPalettes::
 	call FillWhiteBGColor
 	ld c, $9
 	call GetTimePalFade
 	ld b, $4
 	call ConvertTimePalsIncHL
 	ret
-; 8c092
 
-BattleTowerFade: ; 8c092
+BattleTowerFade:
 	call FillWhiteBGColor
 	ld c, $9
 	call GetTimePalFade
@@ -151,30 +142,26 @@ BattleTowerFade: ; 8c092
 	dec b
 	jr nz, .asm_8c09c
 	ret
-; 8c0ab
 
-FadeInQuickly: ; 8c0ab
+FadeInQuickly:
 	ld c, $0
 	call GetTimePalFade
 	ld b, $4
 	call ConvertTimePalsIncHL
 	ret
-; 8c0b6
 
-FadeBlackQuickly: ; 8c0b6
+FadeBlackQuickly:
 	ld c, $9
 	call GetTimePalFade
 	ld b, $4
 	call ConvertTimePalsDecHL
 	ret
-; 8c0c1
 
-
-FillWhiteBGColor: ; 8c0c1
-	ld a, [rSVBK]
+FillWhiteBGColor:
+	ldh a, [rSVBK]
 	push af
 	ld a, BANK(wBGPals1)
-	ld [rSVBK], a
+	ldh [rSVBK], a
 
 	ld hl, wBGPals1
 	ld a, [hli]
@@ -195,11 +182,10 @@ endr
 	jr nz, .loop
 
 	pop af
-	ld [rSVBK], a
+	ldh [rSVBK], a
 	ret
-; 8c0e5
 
-ReplaceTimeOfDayPals: ; 8c0e5
+ReplaceTimeOfDayPals:
 	ld hl, .BrightnessLevels
 	ld a, [wMapTimeOfDay]
 	cp $4 ; Dark cave, needs Flash
@@ -226,9 +212,8 @@ ReplaceTimeOfDayPals: ; 8c0e5
 	ld a, %10101010 ; 2, 2, 2, 2
 	ld [wTimeOfDayPalset], a
 	ret
-; 8c10f (23:410f)
 
-.BrightnessLevels: ; 8c10f
+.BrightnessLevels:
 	dc 3, 2, 1, 0
 	dc 1, 1, 1, 1
 	dc 2, 2, 2, 2
@@ -237,9 +222,8 @@ ReplaceTimeOfDayPals: ; 8c0e5
 	dc 3, 2, 1, 0
 	dc 3, 2, 1, 0
 	dc 3, 2, 1, 0
-; 8c117
 
-GetTimePalette: ; 8c117
+GetTimePalette:
 	ld a, [wTimeOfDay]
 	ld e, a
 	ld d, 0
@@ -250,7 +234,6 @@ GetTimePalette: ; 8c117
 	ld h, [hl]
 	ld l, a
 	jp hl
-; 8c126
 
 .TimePalettes:
 	dw .MorningPalette
@@ -282,10 +265,8 @@ GetTimePalette: ; 8c117
 	rlca
 	rlca
 	ret
-; 8c14e
 
-
-DmgToCgbTimePals: ; 8c14e
+DmgToCgbTimePals:
 	push hl
 	push de
 	ld a, [hli]
@@ -298,9 +279,8 @@ DmgToCgbTimePals: ; 8c14e
 	pop de
 	pop hl
 	ret
-; 8c15e
 
-ConvertTimePalsIncHL: ; 8c15e
+ConvertTimePalsIncHL:
 .loop
 	call DmgToCgbTimePals
 	inc hl
@@ -311,9 +291,8 @@ ConvertTimePalsIncHL: ; 8c15e
 	dec b
 	jr nz, .loop
 	ret
-; 8c16d
 
-ConvertTimePalsDecHL: ; 8c16d
+ConvertTimePalsDecHL:
 .loop
 	call DmgToCgbTimePals
 	dec hl
@@ -324,12 +303,10 @@ ConvertTimePalsDecHL: ; 8c16d
 	dec b
 	jr nz, .loop
 	ret
-; 8c17c
 
-
-GetTimePalFade: ; 8c17c
+GetTimePalFade:
 ; check cgb
-	ld a, [hCGB]
+	ldh a, [hCGB]
 	and a
 	jr nz, .cgb
 
@@ -369,47 +346,46 @@ GetTimePalFade: ; 8c17c
 	dw .darkness
 
 .morn
-	db %11111111, %11111111, %11111111
-	db %11111110, %11111110, %11111110
-	db %11111001, %11100100, %11100100
-	db %11100100, %11010000, %11010000
-	db %10010000, %10000000, %10000000
-	db %01000000, %01000000, %01000000
-	db %00000000, %00000000, %00000000
+	dc 3,3,3,3, 3,3,3,3, 3,3,3,3
+	dc 3,3,3,2, 3,3,3,2, 3,3,3,2
+	dc 3,3,2,1, 3,2,1,0, 3,2,1,0
+	dc 3,2,1,0, 3,1,0,0, 3,1,0,0
+	dc 2,1,0,0, 2,0,0,0, 2,0,0,0
+	dc 1,0,0,0, 1,0,0,0, 1,0,0,0
+	dc 0,0,0,0, 0,0,0,0, 0,0,0,0
 
 .day
-	db %11111111, %11111111, %11111111
-	db %11111110, %11111110, %11111110
-	db %11111001, %11100100, %11100100
-	db %11100100, %11010000, %11010000
-	db %10010000, %10000000, %10000000
-	db %01000000, %01000000, %01000000
-	db %00000000, %00000000, %00000000
+	dc 3,3,3,3, 3,3,3,3, 3,3,3,3
+	dc 3,3,3,2, 3,3,3,2, 3,3,3,2
+	dc 3,3,2,1, 3,2,1,0, 3,2,1,0
+	dc 3,2,1,0, 3,1,0,0, 3,1,0,0
+	dc 2,1,0,0, 2,0,0,0, 2,0,0,0
+	dc 1,0,0,0, 1,0,0,0, 1,0,0,0
+	dc 0,0,0,0, 0,0,0,0, 0,0,0,0
 
 .nite
-	db %11111111, %11111111, %11111111
-	db %11111110, %11111110, %11111110
-	db %11111001, %11100100, %11100100
-	db %11101001, %11010000, %11010000
-	db %10010000, %10000000, %10000000
-	db %01000000, %01000000, %01000000
-	db %00000000, %00000000, %00000000
+	dc 3,3,3,3, 3,3,3,3, 3,3,3,3
+	dc 3,3,3,2, 3,3,3,2, 3,3,3,2
+	dc 3,3,2,1, 3,2,1,0, 3,2,1,0
+	dc 3,2,2,1, 3,1,0,0, 3,1,0,0
+	dc 2,1,0,0, 2,0,0,0, 2,0,0,0
+	dc 1,0,0,0, 1,0,0,0, 1,0,0,0
+	dc 0,0,0,0, 0,0,0,0, 0,0,0,0
 
 .darkness
-	db %11111111, %11111111, %11111111
-	db %11111110, %11111110, %11111111
-	db %11111110, %11100100, %11111111
-	db %11111101, %11010000, %11111111
-	db %11111101, %10000000, %11111111
-	db %00000000, %01000000, %00000000
-	db %00000000, %00000000, %00000000
+	dc 3,3,3,3, 3,3,3,3, 3,3,3,3
+	dc 3,3,3,2, 3,3,3,2, 3,3,3,3
+	dc 3,3,3,2, 3,2,1,0, 3,3,3,3
+	dc 3,3,3,1, 3,1,0,0, 3,3,3,3
+	dc 3,3,3,1, 2,0,0,0, 3,3,3,3
+	dc 0,0,0,0, 1,0,0,0, 0,0,0,0
+	dc 0,0,0,0, 0,0,0,0, 0,0,0,0
 
 .cgbfade
-	db %11111111, %11111111, %11111111
-	db %11111110, %11111110, %11111110
-	db %11111001, %11111001, %11111001
-	db %11100100, %11100100, %11100100
-	db %10010000, %10010000, %10010000
-	db %01000000, %01000000, %01000000
-	db %00000000, %00000000, %00000000
-; 8c20f
+	dc 3,3,3,3, 3,3,3,3, 3,3,3,3
+	dc 3,3,3,2, 3,3,3,2, 3,3,3,2
+	dc 3,3,2,1, 3,3,2,1, 3,3,2,1
+	dc 3,2,1,0, 3,2,1,0, 3,2,1,0
+	dc 2,1,0,0, 2,1,0,0, 2,1,0,0
+	dc 1,0,0,0, 1,0,0,0, 1,0,0,0
+	dc 0,0,0,0, 0,0,0,0, 0,0,0,0

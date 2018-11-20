@@ -2,8 +2,6 @@ INCLUDE "charmap.asm"
 
 INCLUDE "macros.asm"
 
-INCLUDE "hram.asm"
-
 INCLUDE "constants/hardware_constants.asm"
 INCLUDE "constants/deco_constants.asm"
 INCLUDE "constants/wram_constants.asm"
@@ -28,6 +26,7 @@ INCLUDE "constants/map_constants.asm"
 INCLUDE "constants/map_data_constants.asm"
 INCLUDE "constants/map_object_constants.asm"
 INCLUDE "constants/map_setup_constants.asm"
+INCLUDE "constants/mart_constants.asm"
 INCLUDE "constants/menu_constants.asm"
 INCLUDE "constants/mobile_constants.asm"
 INCLUDE "constants/move_constants.asm"

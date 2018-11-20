@@ -1,4 +1,4 @@
-BattleCommand_Teleport: ; 36778
+BattleCommand_Teleport:
 ; teleport
 
 	ld a, [wBattleType]
@@ -16,7 +16,7 @@ BattleCommand_Teleport: ; 36778
 	bit SUBSTATUS_CANT_RUN, a
 	jr nz, .failed
 ; Only need to check these next things if it's your turn
-	ld a, [hBattleTurn]
+	ldh a, [hBattleTurn]
 	and a
 	jr nz, .enemy_turn
 ; Can't teleport from a trainer battle
@@ -87,5 +87,3 @@ BattleCommand_Teleport: ; 36778
 
 	ld hl, FledFromBattleText
 	jp StdBattleTextBox
-
-; 36804

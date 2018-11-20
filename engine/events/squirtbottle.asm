@@ -1,4 +1,4 @@
-_Squirtbottle: ; 50730
+_Squirtbottle:
 	ld hl, .SquirtbottleScript
 	call QueueScript
 	ld a, $1
@@ -17,8 +17,8 @@ _Squirtbottle: ; 50730
 
 .NothingHappenedText:
 	; sprinkled water. But nothing happened…
-	text_jump UnknownText_0x1c0b3b
-	db "@"
+	text_far UnknownText_0x1c0b3b
+	text_end
 
 .CheckCanUseSquirtbottle:
 	ld a, [wMapGroup]
@@ -44,4 +44,3 @@ _Squirtbottle: ; 50730
 	xor a
 	ld [wScriptVar], a
 	ret
-; 50779

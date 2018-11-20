@@ -1,4 +1,4 @@
-ProfOaksPC: ; 0x265d3
+ProfOaksPC:
 	ld hl, OakPCText1
 	call MenuTextBox
 	call YesNoBox
@@ -11,7 +11,7 @@ ProfOaksPC: ; 0x265d3
 	call ExitMenu
 	ret
 
-ProfOaksPCBoot ; 0x265ee
+ProfOaksPCBoot:
 	ld hl, OakPCText2
 	call PrintText
 	call Rate
@@ -20,7 +20,7 @@ ProfOaksPCBoot ; 0x265ee
 	call WaitSFX
 	ret
 
-ProfOaksPCRating: ; 0x26601
+ProfOaksPCRating:
 	call Rate
 	push de
 	ld de, MUSIC_NONE
@@ -31,7 +31,7 @@ ProfOaksPCRating: ; 0x26601
 	call WaitSFX
 	ret
 
-Rate: ; 0x26616
+Rate:
 ; calculate Seen/Owned
 	ld hl, wPokedexSeen
 	ld b, wEndPokedexSeen - wPokedexSeen
@@ -55,7 +55,7 @@ Rate: ; 0x26616
 	pop de
 	ret
 
-.UpdateRatingBuffers: ; 0x26647
+.UpdateRatingBuffers:
 	ld hl, wStringBuffer3
 	ld de, wd002
 	call .UpdateRatingBuffer
@@ -64,7 +64,7 @@ Rate: ; 0x26616
 	call .UpdateRatingBuffer
 	ret
 
-.UpdateRatingBuffer: ; 0x2665a
+.UpdateRatingBuffer:
 	push hl
 	ld a, "@"
 	ld bc, ITEM_NAME_LENGTH
@@ -74,7 +74,7 @@ Rate: ; 0x26616
 	call PrintNum
 	ret
 
-FindOakRating: ; 0x2666b
+FindOakRating:
 ; return sound effect in de
 ; return text pointer in hl
 	nop
@@ -100,94 +100,94 @@ endr
 
 INCLUDE "data/events/pokedex_ratings.asm"
 
-OakPCText1: ; 0x266de
-	text_jump _OakPCText1
-	db "@"
+OakPCText1:
+	text_far _OakPCText1
+	text_end
 
-OakPCText2: ; 0x266e3
-	text_jump _OakPCText2
-	db "@"
+OakPCText2:
+	text_far _OakPCText2
+	text_end
 
-OakPCText3: ; 0x266e8
-	text_jump _OakPCText3
-	db "@"
+OakPCText3:
+	text_far _OakPCText3
+	text_end
 
 OakRating01:
-	text_jump _OakRating01
-	db "@"
+	text_far _OakRating01
+	text_end
 
 OakRating02:
-	text_jump _OakRating02
-	db "@"
+	text_far _OakRating02
+	text_end
 
 OakRating03:
-	text_jump _OakRating03
-	db "@"
+	text_far _OakRating03
+	text_end
 
 OakRating04:
-	text_jump _OakRating04
-	db "@"
+	text_far _OakRating04
+	text_end
 
 OakRating05:
-	text_jump _OakRating05
-	db "@"
+	text_far _OakRating05
+	text_end
 
 OakRating06:
-	text_jump _OakRating06
-	db "@"
+	text_far _OakRating06
+	text_end
 
 OakRating07:
-	text_jump _OakRating07
-	db "@"
+	text_far _OakRating07
+	text_end
 
 OakRating08:
-	text_jump _OakRating08
-	db "@"
+	text_far _OakRating08
+	text_end
 
 OakRating09:
-	text_jump _OakRating09
-	db "@"
+	text_far _OakRating09
+	text_end
 
 OakRating10:
-	text_jump _OakRating10
-	db "@"
+	text_far _OakRating10
+	text_end
 
 OakRating11:
-	text_jump _OakRating11
-	db "@"
+	text_far _OakRating11
+	text_end
 
 OakRating12:
-	text_jump _OakRating12
-	db "@"
+	text_far _OakRating12
+	text_end
 
 OakRating13:
-	text_jump _OakRating13
-	db "@"
+	text_far _OakRating13
+	text_end
 
 OakRating14:
-	text_jump _OakRating14
-	db "@"
+	text_far _OakRating14
+	text_end
 
 OakRating15:
-	text_jump _OakRating15
-	db "@"
+	text_far _OakRating15
+	text_end
 
 OakRating16:
-	text_jump _OakRating16
-	db "@"
+	text_far _OakRating16
+	text_end
 
 OakRating17:
-	text_jump _OakRating17
-	db "@"
+	text_far _OakRating17
+	text_end
 
 OakRating18:
-	text_jump _OakRating18
-	db "@"
+	text_far _OakRating18
+	text_end
 
 OakRating19:
-	text_jump _OakRating19
-	db "@"
+	text_far _OakRating19
+	text_end
 
-OakPCText4: ; 0x2674c
-	text_jump _OakPCText4
-	db "@"
+OakPCText4:
+	text_far _OakPCText4
+	text_end

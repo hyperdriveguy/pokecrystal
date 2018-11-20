@@ -1,4 +1,5 @@
 INCLUDE "constants.asm"
+
 INCLUDE "macros/wram.asm"
 
 
@@ -44,7 +45,7 @@ wCurNoteDuration:: db ; used in MusicE0 and LoadNote
 wCurMusicByte:: db ; c298
 wCurChannel:: db ; c299
 wVolume:: ; c29a
-; corresponds to $ff24
+; corresponds to rNR50
 ; Channel control / ON-OFF / Volume (R/W)
 ;   bit 7 - Vin->SO2 ON/OFF
 ;   bit 6-4 - SO2 output level (volume) (# 0-7)
@@ -52,12 +53,12 @@ wVolume:: ; c29a
 ;   bit 2-0 - SO1 output level (volume) (# 0-7)
 	db
 wSoundOutput:: ; c29b
-; corresponds to $ff25
+; corresponds to rNR51
 ; bit 4-7: ch1-4 so2 on/off
 ; bit 0-3: ch1-4 so1 on/off
 	db
 wSoundInput:: ; c29c
-; corresponds to $ff26
+; corresponds to rNR52
 ; bit 7: global on/off
 ; bit 0: ch1 on/off
 ; bit 1: ch2 on/off
@@ -140,7 +141,7 @@ wAutoInputAddress:: dw ; c2c8
 wAutoInputBank::    db ; c2ca
 wAutoInputLength::  db ; c2cb
 
-wMonStatusFlags:: db
+wDebugFlags:: db
 wGameLogicPaused:: db ; c2cd
 wSpriteUpdatesEnabled:: db
 
@@ -154,14 +155,13 @@ wPrinterConnectionOpen:: db
 wPrinterOpcode:: db
 wPrevDexEntry:: db
 wDisableTextAcceleration:: db
-wPreviousLandmark:: db
-wCurrentLandmark:: db
+wPrevLandmark:: db
+wCurLandmark:: db
 wLandmarkSignTimer:: dw
-wLinkMode:: ; c2dc
-; 0 not in link battle
-; 1 link battle
-; 4 mobile battle
-	db
+
+wLinkMode::
+; a LINK_* value for the link type
+	db ; c2dc
 
 wScriptVar:: db ; c2dd
 
@@ -256,20 +256,20 @@ wc3ac:: ds 8
 ENDU ; c3b4
 
 wSpriteAnimCount:: db
-wCurrSpriteOAMAddr:: db
+wCurSpriteOAMAddr:: db
 
 wCurIcon:: db ; c3b6
 
 wCurIconTile:: db
 wSpriteAnimAddrBackup::
 wSpriteAnimIDBuffer::
-wCurrSpriteAddSubFlags::
+wCurSpriteAddSubFlags::
 	dw
-wCurrAnimVTile:: db
-wCurrAnimXCoord:: db
-wCurrAnimYCoord:: db
-wCurrAnimXOffset:: db
-wCurrAnimYOffset:: db
+wCurAnimVTile:: db
+wCurAnimXCoord:: db
+wCurAnimYCoord:: db
+wCurAnimXOffset:: db
+wCurAnimYOffset:: db
 wGlobalAnimYOffset:: db
 wGlobalAnimXOffset:: db
 wSpriteAnimsEnd::
@@ -358,7 +358,13 @@ SECTION "Battle", WRAM0
 
 UNION ; c608
 ; unidentified uses
-wc608:: ds 480
+wc608:: ds 53
+wc63d:: ds 5
+wc642:: ds 5
+wc647:: ds 33
+wc668:: ds 32
+wc688:: ds 2
+wc68a:: ds 350
 
 NEXTU ; c608
 ; surrounding tiles
@@ -751,7 +757,7 @@ wLinkTradeGetmonSpecies::  db
 NEXTU ; c6d0
 ; naming screen
 wNamingScreenDestinationPointer:: dw ; c6d0
-wNamingScreenCurrNameLength:: db ; c6d2
+wNamingScreenCurNameLength:: db ; c6d2
 wNamingScreenMaxNameLength:: db ; c6d3
 wNamingScreenType:: db ; c6d4
 wNamingScreenCursorObjectPointer:: dw ; c6d5
@@ -787,10 +793,10 @@ wSlotBet:: db
 wFirstTwoReelsMatching:: db
 wFirstTwoReelsMatchingSevens:: db
 wSlotMatched:: db
-wCurrReelStopped:: ds 3
+wCurReelStopped:: ds 3
 wPayout:: dw
-wCurrReelXCoord:: db
-wCurrReelYCoord:: db
+wCurReelXCoord:: db
+wCurReelYCoord:: db
 	ds 2
 wSlotBuildingMatch:: db
 wSlotsDataEnd::
@@ -840,7 +846,7 @@ wDexListingScrollOffset:: db ; offset of the first displayed entry from the star
 wDexListingCursor:: db ; Dex cursor
 wDexListingEnd:: db ; Last mon to display
 wDexListingHeight:: db ; number of entries displayed at once in the dex listing
-wCurrentDexMode:: db ; Pokedex Mode
+wCurDexMode:: db ; Pokedex Mode
 wDexSearchMonType1:: db ; first type to search
 wDexSearchMonType2:: db ; second type to search
 wDexSearchResultCount:: db
@@ -849,14 +855,14 @@ wDexArrowCursorDelayCounter:: db
 wDexArrowCursorBlinkCounter:: db
 wDexSearchSlowpokeFrame:: db
 wUnlockedUnownMode:: db
-wDexCurrentUnownIndex:: db
+wDexCurUnownIndex:: db
 wDexUnownCount:: db
 wDexConvertedMonType:: db ; mon type converted from dex search mon type
 wDexListingScrollOffsetBackup:: db
 wDexListingCursorBackup:: db
 wBackupDexListingCursor:: db
 wBackupDexListingPage:: db
-wDexCurrentLocation:: db
+wDexCurLocation:: db
 if DEF(_CRYSTAL11)
 wPokedexStatus:: db
 wPokedexDataEnd::
@@ -867,7 +873,18 @@ endc
 
 NEXTU ; c6d0
 ; mobile data
-wc6d0:: ds 126
+wc6d0:: ds 56
+wc708:: db
+wc709:: db
+wc70a:: db
+wc70b:: db
+wc70c:: db
+wc70d:: db
+wc70e:: db
+wc70f:: db
+wc710:: db
+wc711:: db
+wc712:: ds 60
 wc74e:: ds 107
 wc7b9:: ds 1
 wc7ba:: ds 1
@@ -1052,25 +1069,22 @@ wc9f9:: ds 7
 
 UNION ; ca00
 ; blank credits tile buffer
-wCreditsFaux2bpp:: ds 128
+wCreditsBlankFrame2bpp:: ds 4 * 4 tiles
+wCreditsBlankFrame2bppEnd::
 
 NEXTU ; ca00
 ; mystery gift data
 wca00:: db
 wca01:: db
 wca02:: db
-	ds 160
-ENDU ; caa3
 
-wcaa3:: ds 2
-wcaa5:: ds 16
-wcab5:: ds 10
-wcabf:: ds 10
-wcac9:: ds 63
-wcb08:: ds 6
+NEXTU ; ca00
+; link data
+	ds 191
+wcabf:: ds 79
 wcb0e:: ds 5
-wcb13:: ds 9
-wcb1c:: ds 14
+wcb13:: ds 23
+ENDU ; cb2a
 
 wBillsPC_ScrollPosition:: db
 wBillsPC_CursorPosition:: db
@@ -1303,9 +1317,7 @@ wcf5d:: dw
 
 wMonType:: db ; cf5f
 
-wCurSpecies::
-wCurMove::
-	db ; cf60
+wCurSpecies:: db ; cf60
 
 wNamedObjectTypeBuffer:: db
 
@@ -1354,7 +1366,7 @@ wPokegearMapRegion:: db
 NEXTU ; cf64
 ; pack
 wPackJumptableIndex:: db
-wCurrPocket:: db
+wCurPocket:: db
 wPackUsedItem:: db
 
 NEXTU ; cf64
@@ -1629,7 +1641,6 @@ wMartItem7BCD:: ds 3
 wMartItem8BCD:: ds 3
 wMartItem9BCD:: ds 3
 wMartItem10BCD:: ds 3
-wMartItemBCDEnd::
 
 NEXTU ; d002
 ; town map data
@@ -1648,7 +1659,7 @@ wPhoneCaller:: dw
 
 NEXTU ; d002
 ; radio data
-wCurrentRadioLine:: db
+wCurRadioLine:: db
 wNextRadioLine:: db
 wRadioTextDelay:: db
 wNumRadioLinesPrinted:: db
@@ -1659,11 +1670,7 @@ wRadioTextEnd::
 
 NEXTU ; d002
 ; lucky number show
-wLuckyNumberDigit1Buffer:: db
-wLuckyNumberDigit2Buffer:: db
-wLuckyNumberDigit3Buffer:: db
-wLuckyNumberDigit4Buffer:: db
-wLuckyNumberDigit5Buffer:: db
+wLuckyNumberDigitsBuffer:: ds 5
 
 NEXTU ; d002
 ; movement buffer data
@@ -1685,7 +1692,7 @@ NEXTU ; d002
 ; trainer HUD data
 	ds 1
 wPlaceBallsDirection:: db
-wTrainerHUDTiles:: db
+wTrainerHUDTiles:: ds 4
 
 NEXTU ; d002
 ; mobile participant nicknames
@@ -1715,7 +1722,8 @@ wd003:: db
 wd004:: db
 
 ; mobile?
-	ds 3
+	ds 1
+wd006:: ds 2
 wd008:: ds 2
 	ds 2
 wd00c:: ds 1
@@ -1870,7 +1878,7 @@ wTMHMPocketScrollPosition::     db
 wSwitchMon::
 wSwitchItem::
 wMoveSwapBuffer::
-wd0e3::
+wd0e3:: ; mobile
 	db
 
 wMenuScrollPosition:: ds 4
@@ -1996,7 +2004,7 @@ wPlayerStepDirection::  ; d151
 wBGMapAnchor:: dw ; d152
 
 UNION ; d154
-wUsedSprites:: ds 64
+wUsedSprites:: ds SPRITE_GFX_LIST_CAPACITY * 2
 wUsedSpritesEnd::
 
 NEXTU ; d154
@@ -2112,7 +2120,6 @@ wEnemyMonCatchRate:: db ; d22b
 wEnemyMonBaseExp::   db ; d22c
 wEnemyMonEnd::
 
-
 wBattleMode:: ; d22d
 ; 0: overworld
 ; 1: wild battle
@@ -2184,11 +2191,24 @@ wPutativeTMHMMove:: db
 wInitListType:: db
 wBattleHasJustStarted:: db
 
+; d265 has many different short-term uses
 wNamedObjectIndexBuffer::
-wCurTMHM::
+wDeciramBuffer::
+wTempByteValue::
+wNumSetBits::
 wTypeMatchup::
-wFoundMatchingIDInParty::
-wd265::
+wCurType::
+wTempSpecies::
+wTempIconSpecies::
+wTempTMHM::
+wTempPP::
+wNextBoxOrPartyIndex::
+wChosenCableClubRoom::
+wBreedingCompatibility::
+wMoveGrammar::
+wApplyStatLevelMultipliersToEnemy::
+wUsePPUp::
+wd265:: ; mobile
 	db
 
 wFailedToFlee:: db
@@ -2361,7 +2381,7 @@ wDST:: ; d4c2
 ; bit 7: dst
 	db
 
-wGameTime::
+wGameTime:: ; used only for BANK(wGameTime)
 wGameTimeCap::     db ; d4c3
 wGameTimeHours::   dw ; d4c4
 wGameTimeMinutes:: db ; d4c6
@@ -2421,7 +2441,7 @@ wMapObjectsEnd::
 
 wObjectMasks:: ds NUM_OBJECTS ; d81e
 
-wVariableSprites:: ds 16; d82e
+wVariableSprites:: ds $100 - SPRITE_VARS ; d82e
 
 wEnteredMapFromContinue:: db ; d83e
 	ds 2
@@ -2472,7 +2492,6 @@ wBadges::
 wJohtoBadges:: flag_array NUM_JOHTO_BADGES ; d857
 wKantoBadges:: flag_array NUM_KANTO_BADGES ; d858
 
-
 wTMsHMs:: ds NUM_TMS + NUM_HMS ; d859
 wTMsHMsEnd::
 
@@ -2509,7 +2528,7 @@ wRegisteredItem:: db ; d95c
 wPlayerState:: db ; d95d
 
 wHallOfFameCount:: dw
-wTradeFlags:: flag_array PARTY_LENGTH ; d960
+wTradeFlags:: flag_array NUM_NPC_TRADES ; d960
 	ds 1
 wMooMooBerries:: db ; d962
 wUndergroundSwitchPositions:: db ; d963
@@ -2658,21 +2677,21 @@ wBikeFlags:: ; dbf5
 	db
 	ds 1 ; cleared along with wBikeFlags by ResetBikeFlags
 
-wCurrMapSceneScriptPointer:: dw ; dbf7
+wCurMapSceneScriptPointer:: dw ; dbf7
 
-wCurrentCaller:: dw ; dbf9
-wCurrMapWarpCount:: db ; dbfb
-wCurrMapWarpsPointer:: dw ; dbfc
-wCurrMapCoordEventCount:: db ; dbfe
-wCurrMapCoordEventsPointer:: dw ; dbff
-wCurrMapBGEventCount:: db ; dc01
-wCurrMapBGEventsPointer:: dw ; dc02
-wCurrMapObjectEventCount:: db ; dc04
-wCurrMapObjectEventsPointer:: dw ; dc05
-wCurrMapSceneScriptCount:: db ; dc07
-wCurrMapSceneScriptsPointer:: dw ; dc08
-wCurrMapCallbackCount:: db ; dc0a
-wCurrMapCallbacksPointer:: dw ; dc0b
+wCurCaller:: dw ; dbf9
+wCurMapWarpCount:: db ; dbfb
+wCurMapWarpsPointer:: dw ; dbfc
+wCurMapCoordEventCount:: db ; dbfe
+wCurMapCoordEventsPointer:: dw ; dbff
+wCurMapBGEventCount:: db ; dc01
+wCurMapBGEventsPointer:: dw ; dc02
+wCurMapObjectEventCount:: db ; dc04
+wCurMapObjectEventsPointer:: dw ; dc05
+wCurMapSceneScriptCount:: db ; dc07
+wCurMapSceneScriptsPointer:: dw ; dc08
+wCurMapCallbackCount:: db ; dc0a
+wCurMapCallbacksPointer:: dw ; dc0b
 
 	ds 2
 
@@ -2692,8 +2711,8 @@ wWhichMomItemSet:: db ; dc18
 wMomItemTriggerBalance:: ds 3 ; dc19
 
 wDailyResetTimer:: dw ; dc1c
-wDailyFlags:: db
-wWeeklyFlags:: db
+wDailyFlags1:: db
+wDailyFlags2:: db
 wSwarmFlags:: db
 	ds 2
 wTimerEventStartDay:: db
@@ -2751,8 +2770,7 @@ wKurtApricornQuantity:: db
 
 wPlayerDataEnd::
 
-
-wCurrMapData::
+wCurMapData::
 
 wVisitedSpawns:: flag_array NUM_SPAWNS ; dca5
 
@@ -2778,7 +2796,7 @@ wYCoord:: db ; dcb7 ; current y coordinate relative to top-left corner of curren
 wXCoord:: db ; dcb8 ; current x coordinate relative to top-left corner of current map
 wScreenSave:: ds SCREEN_META_WIDTH * SCREEN_META_HEIGHT
 
-wCurrMapDataEnd::
+wCurMapDataEnd::
 
 
 SECTION "Party", WRAMX
@@ -2858,8 +2876,8 @@ wRoamMon1:: roam_struct wRoamMon1 ; dfcf
 wRoamMon2:: roam_struct wRoamMon2 ; dfd6
 wRoamMon3:: roam_struct wRoamMon3 ; dfdd
 
-wRoamMons_CurrentMapNumber:: db
-wRoamMons_CurrentMapGroup:: db
+wRoamMons_CurMapNumber:: db
+wRoamMons_CurMapGroup:: db
 wRoamMons_LastMapNumber:: db
 wRoamMons_LastMapGroup:: db
 
@@ -2879,6 +2897,7 @@ wTempTileMap::
 	ds SCREEN_WIDTH * SCREEN_HEIGHT ; $168 = 360
 
 ; PokeAnim data
+wPokeAnimStruct::
 wPokeAnimSceneIndex:: db
 wPokeAnimPointer:: dw
 wPokeAnimSpecies:: db
@@ -2887,7 +2906,6 @@ wPokeAnimSpeciesOrUnown:: db
 wPokeAnimGraphicStartTile:: db
 wPokeAnimCoord:: dw
 wPokeAnimFrontpicHeight:: db
-; PokeAnim Data
 wPokeAnimIdleFlag:: db
 wPokeAnimSpeed:: db
 wPokeAnimPointerBank:: db
@@ -2972,7 +2990,7 @@ w3_dffc:: ds 4
 SECTION "GBC Video", WRAMX
 
 ; eight 4-color palettes each
-wGBCPalettes::
+wGBCPalettes:: ; used only for BANK(wGBCPalettes)
 wBGPals1:: ds 8 palettes ; d000
 wOBPals1:: ds 8 palettes ; d040
 wBGPals2:: ds 8 palettes ; d080
@@ -2983,7 +3001,7 @@ wLYOverridesEnd:: ; d190
 
 	ds 1
 
-wMagnetTrain::
+wMagnetTrain:: ; used only for BANK(wMagnetTrain)
 wMagnetTrainDirection:: db
 wMagnetTrainInitPosition:: db
 wMagnetTrainHoldPosition:: db
@@ -3093,3 +3111,5 @@ wWindowStackBottom:: ds 1
 
 
 INCLUDE "sram.asm"
+
+INCLUDE "hram.asm"

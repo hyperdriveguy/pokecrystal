@@ -1,17 +1,16 @@
-Unreferenced_GetNthMove:: ; 384d
+Unreferenced_GetNthMove::
 	ld hl, wListMoves_MoveIndicesBuffer
 	ld c, a
 	ld b, 0
 	add hl, bc
 	ld a, [hl]
 	ret
-; 3856
 
-GetBaseData:: ; 3856
+GetBaseData::
 	push bc
 	push de
 	push hl
-	ld a, [hROMBank]
+	ldh a, [hROMBank]
 	push af
 	ld a, BANK(BaseData)
 	rst Bankswitch
@@ -62,13 +61,12 @@ GetBaseData:: ; 3856
 	pop de
 	pop bc
 	ret
-; 389c
 
-GetCurNick:: ; 389c
+GetCurNick::
 	ld a, [wCurPartyMon]
 	ld hl, wPartyMonNicknames
 
-GetNick:: ; 38a2
+GetNick::
 ; Get nickname a from list hl.
 
 	push hl
@@ -87,4 +85,3 @@ GetNick:: ; 38a2
 	pop bc
 	pop hl
 	ret
-; 38bb
