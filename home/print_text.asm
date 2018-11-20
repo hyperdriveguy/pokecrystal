@@ -1,4 +1,4 @@
-PrintLetterDelay:: ; 313d
+PrintLetterDelay::
 ; Wait before printing the next letter.
 
 ; The text speed setting in wOptions is actually a frame count:
@@ -55,7 +55,7 @@ PrintLetterDelay:: ; 313d
 	jr nz, .wait
 
 ; Wait one frame if holding A or B.
-	ld a, [hJoyDown]
+	ldh a, [hJoyDown]
 	bit A_BUTTON_F, a
 	jr z, .checkb
 	jr .delay
@@ -74,14 +74,13 @@ PrintLetterDelay:: ; 313d
 
 .end
 	pop af
-	ld [hOAMUpdate], a
+	ldh [hOAMUpdate], a
 	pop bc
 	pop de
 	pop hl
 	ret
-; 318c
 
-CopyDataUntil:: ; 318c
+CopyDataUntil::
 ; Copy [hl .. bc) to de.
 
 ; In other words, the source data is
@@ -98,23 +97,20 @@ CopyDataUntil:: ; 318c
 	cp c
 	jr nz, CopyDataUntil
 	ret
-; 0x3198
 
-PrintNum:: ; 3198
+PrintNum::
 	homecall _PrintNum
 	ret
-; 31a4
 
-MobilePrintNum:: ; 31a4
+MobilePrintNum::
 	homecall _MobilePrintNum
 	ret
-; 31b0
 
-FarPrintText:: ; 31b0
-	ld [hBuffer], a
-	ld a, [hROMBank]
+FarPrintText::
+	ldh [hBuffer], a
+	ldh a, [hROMBank]
 	push af
-	ld a, [hBuffer]
+	ldh a, [hBuffer]
 	rst Bankswitch
 
 	call PrintText
@@ -122,4 +118,3 @@ FarPrintText:: ; 31b0
 	pop af
 	rst Bankswitch
 	ret
-; 31be

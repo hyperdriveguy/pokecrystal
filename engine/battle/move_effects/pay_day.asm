@@ -1,11 +1,11 @@
-BattleCommand_PayDay: ; 3705c
+BattleCommand_PayDay:
 ; payday
 
 	xor a
 	ld hl, wStringBuffer1
 	ld [hli], a
 
-	ld a, [hBattleTurn]
+	ldh a, [hBattleTurn]
 	and a
 	ld a, [wBattleMonLevel]
 	jr z, .ok
@@ -24,5 +24,3 @@ BattleCommand_PayDay: ; 3705c
 .done
 	ld hl, CoinsScatteredText
 	jp StdBattleTextBox
-
-; 3707f

@@ -1,7 +1,7 @@
-BlankScreen: ; 8000
+BlankScreen:
 	call DisableSpriteUpdates
 	xor a
-	ld [hBGMapMode], a
+	ldh [hBGMapMode], a
 	call ClearBGPalettes
 	call ClearSprites
 	hlcoord 0, 0
@@ -16,7 +16,7 @@ BlankScreen: ; 8000
 	call SetPalettes
 	ret
 
-SpawnPlayer: ; 8029
+SpawnPlayer:
 	ld a, -1
 	ld [wObjectFollow_Leader], a
 	ld [wObjectFollow_Follower], a
@@ -41,23 +41,23 @@ SpawnPlayer: ; 8029
 .ok
 	ld [hl], e
 	ld a, PLAYER_OBJECT
-	ld [hMapObjectIndexBuffer], a
+	ldh [hMapObjectIndexBuffer], a
 	ld bc, wMapObjects
 	ld a, PLAYER_OBJECT
-	ld [hObjectStructIndexBuffer], a
+	ldh [hObjectStructIndexBuffer], a
 	ld de, wObjectStructs
 	call CopyMapObjectToObjectStruct
 	ld a, PLAYER
 	ld [wCenteredObject], a
 	ret
 
-PlayerObjectTemplate: ; 8071
+PlayerObjectTemplate:
 ; A dummy map object used to initialize the player object.
 ; Shorter than the actual amount copied by two bytes.
 ; Said bytes seem to be unused.
 	object_event -4, -4, SPRITE_CHRIS, SPRITEMOVEDATA_PLAYER, 15, 15, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, 0, -1
 
-CopyDECoordsToMapObject:: ; 807e
+CopyDECoordsToMapObject::
 	push de
 	ld a, b
 	call GetMapObject
@@ -70,7 +70,7 @@ CopyDECoordsToMapObject:: ; 807e
 	ld [hl], e
 	ret
 
-PlayerSpawn_ConvertCoords: ; 808f
+PlayerSpawn_ConvertCoords:
 	push bc
 	ld a, [wXCoord]
 	add 4
@@ -82,7 +82,7 @@ PlayerSpawn_ConvertCoords: ; 808f
 	call CopyDECoordsToMapObject
 	ret
 
-WriteObjectXY:: ; 80a1
+WriteObjectXY::
 	ld a, b
 	call CheckObjectVisibility
 	ret c
@@ -93,13 +93,13 @@ WriteObjectXY:: ; 80a1
 	ld hl, OBJECT_NEXT_MAP_Y
 	add hl, bc
 	ld e, [hl]
-	ld a, [hMapObjectIndexBuffer]
+	ldh a, [hMapObjectIndexBuffer]
 	ld b, a
 	call CopyDECoordsToMapObject
 	and a
 	ret
 
-RefreshPlayerCoords: ; 80b8
+RefreshPlayerCoords:
 	ld a, [wXCoord]
 	add 4
 	ld d, a
@@ -127,7 +127,7 @@ RefreshPlayerCoords: ; 80b8
 	ret nz ; wtf
 	ret
 
-CopyObjectStruct:: ; 80e7
+CopyObjectStruct::
 	call CheckObjectMask
 	and a
 	ret nz ; masked
@@ -136,12 +136,12 @@ CopyObjectStruct:: ; 80e7
 	ld a, 1
 	ld de, OBJECT_STRUCT_LENGTH
 .loop
-	ld [hObjectStructIndexBuffer], a
+	ldh [hObjectStructIndexBuffer], a
 	ld a, [hl]
 	and a
 	jr z, .done
 	add hl, de
-	ld a, [hObjectStructIndexBuffer]
+	ldh a, [hObjectStructIndexBuffer]
 	inc a
 	cp NUM_OBJECT_STRUCTS
 	jr nz, .loop
@@ -161,18 +161,18 @@ CopyObjectStruct:: ; 80e7
 	set 5, [hl]
 	ret
 
-CopyMapObjectToObjectStruct: ; 8116
+CopyMapObjectToObjectStruct:
 	call .CopyMapObjectToTempObject
 	call CopyTempObjectToObjectStruct
 	ret
 
-.CopyMapObjectToTempObject: ; 811d
-	ld a, [hObjectStructIndexBuffer]
+.CopyMapObjectToTempObject:
+	ldh a, [hObjectStructIndexBuffer]
 	ld hl, MAPOBJECT_OBJECT_STRUCT_ID
 	add hl, bc
 	ld [hl], a
 
-	ld a, [hMapObjectIndexBuffer]
+	ldh a, [hMapObjectIndexBuffer]
 	ld [wTempObjectCopyMapObjectIndex], a
 
 	ld hl, MAPOBJECT_SPRITE
@@ -223,11 +223,11 @@ CopyMapObjectToObjectStruct: ; 8116
 	ld [wTempObjectCopyRadius], a
 	ret
 
-InitializeVisibleSprites: ; 8177
+InitializeVisibleSprites:
 	ld bc, wMapObjects + OBJECT_LENGTH
 	ld a, 1
 .loop
-	ld [hMapObjectIndexBuffer], a
+	ldh [hMapObjectIndexBuffer], a
 	ld hl, MAPOBJECT_SPRITE
 	add hl, bc
 	ld a, [hl]
@@ -275,16 +275,16 @@ InitializeVisibleSprites: ; 8177
 	add hl, bc
 	ld b, h
 	ld c, l
-	ld a, [hMapObjectIndexBuffer]
+	ldh a, [hMapObjectIndexBuffer]
 	inc a
 	cp NUM_OBJECTS
 	jr nz, .loop
 	ret
 
-.ret ; 81c9
+.ret
 	ret
 
-CheckObjectEnteringVisibleRange:: ; 81ca
+CheckObjectEnteringVisibleRange::
 	nop
 	ld a, [wPlayerStepDirection]
 	cp STANDING
@@ -293,28 +293,28 @@ CheckObjectEnteringVisibleRange:: ; 81ca
 	rst JumpTable
 	ret
 
-.dw ; 81d6
+.dw
 	dw .Down
 	dw .Up
 	dw .Left
 	dw .Right
 
-.Up: ; 81de
+.Up:
 	ld a, [wYCoord]
 	sub 1
 	jr .Vertical
 
-.Down: ; 81e5
+.Down:
 	ld a, [wYCoord]
 	add 9
-.Vertical: ; 81ea
+.Vertical:
 	ld d, a
 	ld a, [wXCoord]
 	ld e, a
 	ld bc, wMapObjects + OBJECT_LENGTH
 	ld a, 1
 .loop_v
-	ld [hMapObjectIndexBuffer], a
+	ldh [hMapObjectIndexBuffer], a
 	ld hl, MAPOBJECT_SPRITE
 	add hl, bc
 	ld a, [hl]
@@ -349,28 +349,28 @@ CheckObjectEnteringVisibleRange:: ; 81ca
 	add hl, bc
 	ld b, h
 	ld c, l
-	ld a, [hMapObjectIndexBuffer]
+	ldh a, [hMapObjectIndexBuffer]
 	inc a
 	cp NUM_OBJECTS
 	jr nz, .loop_v
 	ret
 
-.Left: ; 8232
+.Left:
 	ld a, [wXCoord]
 	sub 1
 	jr .Horizontal
 
-.Right: ; 8239
+.Right:
 	ld a, [wXCoord]
 	add 10
-.Horizontal: ; 823e
+.Horizontal:
 	ld e, a
 	ld a, [wYCoord]
 	ld d, a
 	ld bc, wMapObjects + OBJECT_LENGTH
 	ld a, 1
 .loop_h
-	ld [hMapObjectIndexBuffer], a
+	ldh [hMapObjectIndexBuffer], a
 	ld hl, MAPOBJECT_SPRITE
 	add hl, bc
 	ld a, [hl]
@@ -405,13 +405,13 @@ CheckObjectEnteringVisibleRange:: ; 81ca
 	add hl, bc
 	ld b, h
 	ld c, l
-	ld a, [hMapObjectIndexBuffer]
+	ldh a, [hMapObjectIndexBuffer]
 	inc a
 	cp NUM_OBJECTS
 	jr nz, .loop_h
 	ret
 
-CopyTempObjectToObjectStruct: ; 8286
+CopyTempObjectToObjectStruct:
 	ld a, [wTempObjectCopyMapObjectIndex]
 	ld hl, OBJECT_MAP_OBJECT_INDEX
 	add hl, de
@@ -461,7 +461,7 @@ CopyTempObjectToObjectStruct: ; 8286
 	and a
 	ret
 
-.InitYCoord: ; 82d5
+.InitYCoord:
 	ld hl, OBJECT_INIT_Y
 	add hl, de
 	ld [hl], a
@@ -481,7 +481,7 @@ CopyTempObjectToObjectStruct: ; 8286
 	ld [hl], a
 	ret
 
-.InitXCoord: ; 82f1
+.InitXCoord:
 	ld hl, OBJECT_INIT_X
 	add hl, de
 	ld [hl], a
@@ -499,7 +499,7 @@ CopyTempObjectToObjectStruct: ; 8286
 	ld [hl], a
 	ret
 
-.InitRadius: ; 830d
+.InitRadius:
 	ld h, a
 	inc a
 	and $f
@@ -513,15 +513,15 @@ CopyTempObjectToObjectStruct: ; 8286
 	ld [hl], a
 	ret
 
-TrainerWalkToPlayer: ; 831e
-	ld a, [hLastTalked]
+TrainerWalkToPlayer:
+	ldh a, [hLastTalked]
 	call InitMovementBuffer
 	ld a, movement_step_sleep
 	call AppendToMovementBuffer
 	ld a, [wd03f]
 	dec a
 	jr z, .TerminateStep
-	ld a, [hLastTalked]
+	ldh a, [hLastTalked]
 	ld b, a
 	ld c, PLAYER
 	ld d, 1
@@ -533,7 +533,7 @@ TrainerWalkToPlayer: ; 831e
 	call AppendToMovementBuffer
 	ret
 
-.GetPathToPlayer: ; 8341
+.GetPathToPlayer:
 	push de
 	push bc
 ; get player object struct, load to de
@@ -577,7 +577,7 @@ TrainerWalkToPlayer: ; 831e
 	call ComputePathToWalkToPlayer
 	ret
 
-SurfStartStep: ; 8379
+SurfStartStep:
 	call InitMovementBuffer
 	call .GetMovementData
 	call AppendToMovementBuffer
@@ -585,7 +585,7 @@ SurfStartStep: ; 8379
 	call AppendToMovementBuffer
 	ret
 
-.GetMovementData: ; 8388
+.GetMovementData:
 	ld a, [wPlayerDirection]
 	srl a
 	srl a
@@ -603,7 +603,7 @@ SurfStartStep: ; 8379
 	slow_step LEFT
 	slow_step RIGHT
 
-FollowNotExact:: ; 839e
+FollowNotExact::
 	push bc
 	ld a, c
 	call CheckObjectVisibility
@@ -678,7 +678,7 @@ FollowNotExact:: ; 839e
 	ld hl, OBJECT_SPRITE_Y
 	add hl, de
 	ld [hl], a
-	ld a, [hObjectStructIndexBuffer]
+	ldh a, [hObjectStructIndexBuffer]
 	ld hl, OBJECT_RANGE
 	add hl, de
 	ld [hl], a
@@ -690,7 +690,7 @@ FollowNotExact:: ; 839e
 	ld [hl], STEP_TYPE_00
 	ret
 
-GetRelativeFacing:: ; 8417
+GetRelativeFacing::
 ; Determines which way map object e would have to turn to face map object d.  Returns carry if it's impossible for whatever reason.
 	ld a, d
 	call GetMapObject
@@ -715,7 +715,7 @@ GetRelativeFacing:: ; 8417
 	scf
 	ret
 
-.GetFacing_e_relativeto_d: ; 8439
+.GetFacing_e_relativeto_d:
 ; Determines which way object e would have to turn to face object d.  Returns carry if it's impossible.
 ; load the coordinates of object d into bc
 	ld a, d
@@ -796,7 +796,7 @@ GetRelativeFacing:: ; 8417
 	scf
 	ret
 
-QueueFollowerFirstStep: ; 848a
+QueueFollowerFirstStep:
 	call .QueueFirstStep
 	jr c, .same
 	ld [wFollowMovementQueue], a

@@ -1,11 +1,10 @@
 MAX_ROLLOUT_COUNT EQU 5
 
-
-BattleCommand_CheckCurl: ; 37718
+BattleCommand_CheckCurl:
 ; checkcurl
 
 	ld de, wPlayerRolloutCount
-	ld a, [hBattleTurn]
+	ldh a, [hBattleTurn]
 	and a
 	jr z, .ok
 	ld de, wEnemyRolloutCount
@@ -22,10 +21,8 @@ BattleCommand_CheckCurl: ; 37718
 	xor a
 	ld [de], a
 	ret
-; 37734
 
-
-BattleCommand_RolloutPower: ; 37734
+BattleCommand_RolloutPower:
 ; rolloutpower
 
 	ld a, BATTLE_VARS_STATUS
@@ -34,7 +31,7 @@ BattleCommand_RolloutPower: ; 37734
 	ret nz
 
 	ld hl, wPlayerRolloutCount
-	ld a, [hBattleTurn]
+	ldh a, [hBattleTurn]
 	and a
 	jr z, .got_rollout_count
 	ld hl, wEnemyRolloutCount
@@ -96,4 +93,3 @@ BattleCommand_RolloutPower: ; 37734
 
 .done_damage
 	ret
-; 37791

@@ -1,4 +1,4 @@
-GetUnownLetter: ; 51040
+GetUnownLetter:
 ; Return Unown letter in wUnownLetter based on DVs at hl
 
 ; Take the middle 2 bits of each DV and place them in order:
@@ -32,50 +32,50 @@ GetUnownLetter: ; 51040
 	or b
 
 ; Divide by 10 to get 0-25
-	ld [hDividend + 3], a
+	ldh [hDividend + 3], a
 	xor a
-	ld [hDividend], a
-	ld [hDividend + 1], a
-	ld [hDividend + 2], a
+	ldh [hDividend], a
+	ldh [hDividend + 1], a
+	ldh [hDividend + 2], a
 	ld a, $ff / NUM_UNOWN + 1
-	ld [hDivisor], a
+	ldh [hDivisor], a
 	ld b, 4
 	call Divide
 
 ; Increment to get 1-26
-	ld a, [hQuotient + 2]
+	ldh a, [hQuotient + 3]
 	inc a
 	ld [wUnownLetter], a
 	ret
 
-GetMonFrontpic: ; 51077
+GetMonFrontpic:
 	ld a, [wCurPartySpecies]
 	ld [wCurSpecies], a
 	call IsAPokemon
 	ret c
-	ld a, [rSVBK]
+	ldh a, [rSVBK]
 	push af
 	call _GetFrontpic
 	pop af
-	ld [rSVBK], a
+	ldh [rSVBK], a
 	ret
 
-GetAnimatedFrontpic: ; 5108b
+GetAnimatedFrontpic:
 	ld a, [wCurPartySpecies]
 	ld [wCurSpecies], a
 	call IsAPokemon
 	ret c
-	ld a, [rSVBK]
+	ldh a, [rSVBK]
 	push af
 	xor a
-	ld [hBGMapMode], a
+	ldh [hBGMapMode], a
 	call _GetFrontpic
 	call GetAnimatedEnemyFrontpic
 	pop af
-	ld [rSVBK], a
+	ldh [rSVBK], a
 	ret
 
-_GetFrontpic: ; 510a5
+_GetFrontpic:
 	push de
 	call GetBaseData
 	ld a, [wBasePicSize]
@@ -84,7 +84,7 @@ _GetFrontpic: ; 510a5
 	push bc
 	call GetFrontpicPointer
 	ld a, BANK(wDecompressEnemyFrontpic)
-	ld [rSVBK], a
+	ldh [rSVBK], a
 	ld a, b
 	ld de, wDecompressEnemyFrontpic
 	call FarDecompress
@@ -96,13 +96,13 @@ _GetFrontpic: ; 510a5
 	push hl
 	ld de, wDecompressScratch
 	ld c, 7 * 7
-	ld a, [hROMBank]
+	ldh a, [hROMBank]
 	ld b, a
 	call Get2bpp
 	pop hl
 	ret
 
-GetFrontpicPointer: ; 510d7
+GetFrontpicPointer:
 	ld a, [wCurPartySpecies]
 	cp UNOWN
 	jr z, .unown
@@ -129,13 +129,13 @@ GetFrontpicPointer: ; 510d7
 	pop bc
 	ret
 
-GetAnimatedEnemyFrontpic: ; 51103
+GetAnimatedEnemyFrontpic:
 	ld a, BANK(vTiles3)
-	ld [rVBK], a
+	ldh [rVBK], a
 	push hl
 	ld de, wDecompressScratch
 	ld c, 7 * 7
-	ld a, [hROMBank]
+	ldh a, [hROMBank]
 	ld b, a
 	call Get2bpp
 	pop hl
@@ -158,21 +158,20 @@ GetAnimatedEnemyFrontpic: ; 51103
 	ld de, wDecompressEnemyFrontpic + 7 * 7 tiles
 	ld c, 7 * 7
 .got_dims
-
 	push hl
 	push bc
 	call LoadFrontpicTiles
 	pop bc
 	pop hl
 	ld de, wDecompressScratch
-	ld a, [hROMBank]
+	ldh a, [hROMBank]
 	ld b, a
 	call Get2bpp
 	xor a
-	ld [rVBK], a
+	ldh [rVBK], a
 	ret
 
-LoadFrontpicTiles: ; 5114f
+LoadFrontpicTiles:
 	ld hl, wDecompressScratch
 	swap c
 	ld a, c
@@ -193,7 +192,7 @@ LoadFrontpicTiles: ; 5114f
 	jr nz, .loop
 	ret
 
-GetMonBackpic: ; 5116c
+GetMonBackpic:
 	ld a, [wCurPartySpecies]
 	call IsAPokemon
 	ret c
@@ -202,10 +201,10 @@ GetMonBackpic: ; 5116c
 	ld b, a
 	ld a, [wUnownLetter]
 	ld c, a
-	ld a, [rSVBK]
+	ldh a, [rSVBK]
 	push af
 	ld a, BANK(wDecompressScratch)
-	ld [rSVBK], a
+	ldh [rSVBK], a
 	push de
 
 	; These are assumed to be at the same address in their respective banks.
@@ -237,14 +236,14 @@ GetMonBackpic: ; 5116c
 	call FixBackpicAlignment
 	pop hl
 	ld de, wDecompressScratch
-	ld a, [hROMBank]
+	ldh a, [hROMBank]
 	ld b, a
 	call Get2bpp
 	pop af
-	ld [rSVBK], a
+	ldh [rSVBK], a
 	ret
 
-FixPicBank: ; 511c5
+FixPicBank:
 ; This is a thing for some reason.
 
 PICS_FIX EQU $36
@@ -252,7 +251,7 @@ GLOBAL PICS_FIX
 
 	push hl
 	push bc
-	sub BANK(Pics_1) - PICS_FIX
+	sub BANK("Pics 1") - PICS_FIX
 	ld c, a
 	ld b, 0
 	ld hl, .PicsBanks
@@ -262,33 +261,33 @@ GLOBAL PICS_FIX
 	pop hl
 	ret
 
-.PicsBanks: ; 511d4
-	db BANK(Pics_1) + 0
-	db BANK(Pics_1) + 1
-	db BANK(Pics_1) + 2
-	db BANK(Pics_1) + 3
-	db BANK(Pics_1) + 4
-	db BANK(Pics_1) + 5
-	db BANK(Pics_1) + 6
-	db BANK(Pics_1) + 7
-	db BANK(Pics_1) + 8
-	db BANK(Pics_1) + 9
-	db BANK(Pics_1) + 10
-	db BANK(Pics_1) + 11
-	db BANK(Pics_1) + 12
-	db BANK(Pics_1) + 13
-	db BANK(Pics_1) + 14
-	db BANK(Pics_1) + 15
-	db BANK(Pics_1) + 16
-	db BANK(Pics_1) + 17
-	db BANK(Pics_1) + 18
-	db BANK(Pics_1) + 19
-	db BANK(Pics_1) + 20
-	db BANK(Pics_1) + 21
-	db BANK(Pics_1) + 22
-	db BANK(Pics_1) + 23
+.PicsBanks:
+	db BANK("Pics 1")  ; BANK("Pics 1") + 0
+	db BANK("Pics 2")  ; BANK("Pics 1") + 1
+	db BANK("Pics 3")  ; BANK("Pics 1") + 2
+	db BANK("Pics 4")  ; BANK("Pics 1") + 3
+	db BANK("Pics 5")  ; BANK("Pics 1") + 4
+	db BANK("Pics 6")  ; BANK("Pics 1") + 5
+	db BANK("Pics 7")  ; BANK("Pics 1") + 6
+	db BANK("Pics 8")  ; BANK("Pics 1") + 7
+	db BANK("Pics 9")  ; BANK("Pics 1") + 8
+	db BANK("Pics 10") ; BANK("Pics 1") + 9
+	db BANK("Pics 11") ; BANK("Pics 1") + 10
+	db BANK("Pics 12") ; BANK("Pics 1") + 11
+	db BANK("Pics 13") ; BANK("Pics 1") + 12
+	db BANK("Pics 14") ; BANK("Pics 1") + 13
+	db BANK("Pics 15") ; BANK("Pics 1") + 14
+	db BANK("Pics 16") ; BANK("Pics 1") + 15
+	db BANK("Pics 17") ; BANK("Pics 1") + 16
+	db BANK("Pics 18") ; BANK("Pics 1") + 17
+	db BANK("Pics 19") ; BANK("Pics 1") + 18
+	db BANK("Pics 20") ; BANK("Pics 1") + 19
+	db BANK("Pics 21") ; BANK("Pics 1") + 20
+	db BANK("Pics 22") ; BANK("Pics 1") + 21
+	db BANK("Pics 23") ; BANK("Pics 1") + 22
+	db BANK("Pics 24") ; BANK("Pics 1") + 23
 
-Function511ec: ; 511ec
+Function511ec:
 	ld a, c
 	push de
 	ld hl, PokemonPicPointers
@@ -307,7 +306,7 @@ Function511ec: ; 511ec
 	call FarDecompress
 	ret
 
-GetTrainerPic: ; 5120d
+GetTrainerPic:
 	ld a, [wTrainerClass]
 	and a
 	ret z
@@ -315,16 +314,16 @@ GetTrainerPic: ; 5120d
 	ret nc
 	call WaitBGMap
 	xor a
-	ld [hBGMapMode], a
+	ldh [hBGMapMode], a
 	ld hl, TrainerPicPointers
 	ld a, [wTrainerClass]
 	dec a
 	ld bc, 3
 	call AddNTimes
-	ld a, [rSVBK]
+	ldh a, [rSVBK]
 	push af
 	ld a, BANK(wDecompressScratch)
-	ld [rSVBK], a
+	ldh [rSVBK], a
 	push de
 	ld a, BANK(TrainerPicPointers)
 	call GetFarByte
@@ -339,23 +338,23 @@ GetTrainerPic: ; 5120d
 	pop hl
 	ld de, wDecompressScratch
 	ld c, 7 * 7
-	ld a, [hROMBank]
+	ldh a, [hROMBank]
 	ld b, a
 	call Get2bpp
 	pop af
-	ld [rSVBK], a
+	ldh [rSVBK], a
 	call WaitBGMap
 	ld a, $1
-	ld [hBGMapMode], a
+	ldh [hBGMapMode], a
 	ret
 
-DecompressGet2bpp: ; 5125d
+DecompressGet2bpp:
 ; Decompress lz data from b:hl to scratch space at 6:d000, then copy it to address de.
 
-	ld a, [rSVBK]
+	ldh a, [rSVBK]
 	push af
 	ld a, BANK(wDecompressScratch)
-	ld [rSVBK], a
+	ldh [rSVBK], a
 
 	push de
 	push bc
@@ -365,15 +364,15 @@ DecompressGet2bpp: ; 5125d
 	pop bc
 	ld de, wDecompressScratch
 	pop hl
-	ld a, [hROMBank]
+	ldh a, [hROMBank]
 	ld b, a
 	call Get2bpp
 
 	pop af
-	ld [rSVBK], a
+	ldh [rSVBK], a
 	ret
 
-FixBackpicAlignment: ; 5127c
+FixBackpicAlignment:
 	push de
 	push bc
 	ld a, [wBoxAlignment]
@@ -409,7 +408,7 @@ FixBackpicAlignment: ; 5127c
 	pop de
 	ret
 
-PadFrontpic: ; 512ab
+PadFrontpic:
 ; pads frontpic to fill 7x7 box
 	ld a, b
 	cp 6
@@ -418,39 +417,39 @@ PadFrontpic: ; 512ab
 	jr z, .five
 
 .seven_loop
-	ld c, $70
+	ld c, 7 << 4
 	call LoadOrientedFrontpic
 	dec b
 	jr nz, .seven_loop
 	ret
 
 .six
-	ld c, $70
+	ld c, 7 << 4
 	xor a
 	call .Fill
 .six_loop
-	ld c, $10
+	ld c, (7 - 6) << 4
 	xor a
 	call .Fill
-	ld c, $60
+	ld c, 6 << 4
 	call LoadOrientedFrontpic
 	dec b
 	jr nz, .six_loop
 	ret
 
 .five
-	ld c, $70
+	ld c, 7 << 4
 	xor a
 	call .Fill
 .five_loop
-	ld c, $20
+	ld c, (7 - 5) << 4
 	xor a
 	call .Fill
-	ld c, $50
+	ld c, 5 << 4
 	call LoadOrientedFrontpic
 	dec b
 	jr nz, .five_loop
-	ld c, $70
+	ld c, 7 << 4
 	xor a
 	call .Fill
 	ret
@@ -461,7 +460,7 @@ PadFrontpic: ; 512ab
 	jr nz, .Fill
 	ret
 
-LoadOrientedFrontpic: ; 512f2
+LoadOrientedFrontpic:
 	ld a, [wBoxAlignment]
 	and a
 	jr nz, .x_flip

@@ -1,4 +1,4 @@
-BattleCommand_MirrorCoat: ; 37c95
+BattleCommand_MirrorCoat:
 ; mirrorcoat
 
 	ld a, 1
@@ -29,11 +29,11 @@ BattleCommand_MirrorCoat: ; 37c95
 	ld de, wStringBuffer1
 	call GetMoveData
 
-	ld a, [wStringBuffer1 + 2]
+	ld a, [wStringBuffer1 + MOVE_POWER]
 	and a
 	ret z
 
-	ld a, [wStringBuffer1 + 3]
+	ld a, [wStringBuffer1 + MOVE_TYPE]
 	cp SPECIAL
 	ret c
 
@@ -58,5 +58,3 @@ BattleCommand_MirrorCoat: ; 37c95
 	xor a
 	ld [wAttackMissed], a
 	ret
-
-; 37ce6

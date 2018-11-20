@@ -1,9 +1,9 @@
-BattleCommand_Encore: ; 35864
+BattleCommand_Encore:
 ; encore
 
 	ld hl, wEnemyMonMoves
 	ld de, wEnemyEncoreCount
-	ld a, [hBattleTurn]
+	ldh a, [hBattleTurn]
 	and a
 	jr z, .ok
 	ld hl, wBattleMonMoves
@@ -47,7 +47,7 @@ BattleCommand_Encore: ; 35864
 	ld [de], a
 	call CheckOpponentWentFirst
 	jr nz, .finish_move
-	ld a, [hBattleTurn]
+	ldh a, [hBattleTurn]
 	and a
 	jr z, .force_last_enemy_move
 
@@ -118,5 +118,3 @@ BattleCommand_Encore: ; 35864
 
 .failed
 	jp PrintDidntAffect2
-
-; 35926

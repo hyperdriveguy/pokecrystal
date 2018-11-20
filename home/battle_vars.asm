@@ -1,12 +1,11 @@
-GetBattleVar:: ; 39e1
+GetBattleVar::
 ; Preserves hl.
 	push hl
 	call GetBattleVarAddr
 	pop hl
 	ret
-; 39e7
 
-GetBattleVarAddr:: ; 39e7
+GetBattleVarAddr::
 ; Get variable from pair a, depending on whose turn it is.
 ; There are 21 variable pairs.
 
@@ -24,7 +23,7 @@ GetBattleVarAddr:: ; 39e7
 
 ; Enemy turn uses the second byte instead.
 ; This lets battle variable calls be side-neutral.
-	ld a, [hBattleTurn]
+	ldh a, [hBattleTurn]
 	and a
 	jr z, .getvar
 	inc hl
@@ -110,4 +109,3 @@ BattleVarLocations:
 	dw wCurPlayerMove,             wCurEnemyMove
 	dw wLastPlayerCounterMove,     wLastEnemyCounterMove
 	dw wLastPlayerMove,            wLastEnemyMove
-; 3a90

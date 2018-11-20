@@ -1,5 +1,5 @@
-PushLYOverrides:: ; 3b0c
-	ld a, [hLCDCPointer]
+PushLYOverrides::
+	ldh a, [hLCDCPointer]
 	and a
 	ret z
 
@@ -16,11 +16,10 @@ PushLYOverrides:: ; 3b0c
 	ld a, (wLYOverridesEnd - wLYOverrides) / 16
 	ld [wRequested2bpp], a
 	ret
-; 3b2a
 
-_InitSpriteAnimStruct:: ; 3b2a
+_InitSpriteAnimStruct::
 	ld [wSpriteAnimIDBuffer], a
-	ld a, [hROMBank]
+	ldh a, [hROMBank]
 	push af
 
 	ld a, BANK(InitSpriteAnimStruct)
@@ -33,11 +32,10 @@ _InitSpriteAnimStruct:: ; 3b2a
 	rst Bankswitch
 
 	ret
-; 3b3c
 
-ReinitSpriteAnimFrame:: ; 3b3c
+ReinitSpriteAnimFrame::
 	ld [wSpriteAnimIDBuffer], a
-	ld a, [hROMBank]
+	ldh a, [hROMBank]
 	push af
 
 	ld a, BANK(_ReinitSpriteAnimFrame)
@@ -50,4 +48,3 @@ ReinitSpriteAnimFrame:: ; 3b3c
 	rst Bankswitch
 
 	ret
-; 3b4e

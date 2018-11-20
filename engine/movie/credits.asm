@@ -3,7 +3,7 @@ INCLUDE "constants.asm"
 
 SECTION "Credits", ROMX
 
-Credits:: ; 109847
+Credits::
 	bit 6, b ; Hall Of Fame
 	ld a, $0
 	jr z, .okay
@@ -11,18 +11,21 @@ Credits:: ; 109847
 .okay
 	ld [wJumptableIndex], a
 
-	ld a, [rSVBK]
+	ldh a, [rSVBK]
 	push af
 	ld a, BANK(wGBCPalettes)
-	ld [rSVBK], a
+	ldh [rSVBK], a
 
 	call ClearBGPalettes
 	call ClearTileMap
 	call ClearSprites
 
-	ld hl, wCreditsFaux2bpp
-	ld c, $80
-	ld de, $ff00
+	ld hl, wCreditsBlankFrame2bpp
+	ld c, (wCreditsBlankFrame2bppEnd - wCreditsBlankFrame2bpp) / 2
+	ld de, `22222222 ; eight pixels, each color #2 (dark)
+
+; Fill wCreditsBlankFrame2bpp with 4x4=16 tiles, all solid dark color
+; (the same color used for the four border frame mons' backgrounds)
 
 .load_loop
 	ld a, e
@@ -68,19 +71,19 @@ Credits:: ; 109847
 	xor a
 	call ByteFill
 
-	ld a, rSCX - $ff00
-	ld [hLCDCPointer], a
+	ld a, LOW(rSCX)
+	ldh [hLCDCPointer], a
 
 	call GetCreditsPalette
 	call SetPalettes
-	ld a, [hVBlank]
+	ldh a, [hVBlank]
 	push af
 	ld a, $5
-	ld [hVBlank], a
+	ldh [hVBlank], a
 	ld a, $1
-	ld [hInMenu], a
+	ldh [hInMenu], a
 	xor a
-	ld [hBGMapMode], a
+	ldh [hBGMapMode], a
 	ld [wCreditsPos], a
 	ld [wCreditsUnusedCD21], a
 	ld [wCreditsTimer], a
@@ -97,26 +100,24 @@ Credits:: ; 109847
 .exit_credits
 	call ClearBGPalettes
 	xor a
-	ld [hLCDCPointer], a
-	ld [hBGMapAddress], a
+	ldh [hLCDCPointer], a
+	ldh [hBGMapAddress], a
 	pop af
-	ld [hVBlank], a
+	ldh [hVBlank], a
 	pop af
-	ld [rSVBK], a
+	ldh [rSVBK], a
 	ret
-; 1098fd
 
-Credits_HandleAButton: ; 1098fd
-	ld a, [hJoypadDown]
+Credits_HandleAButton:
+	ldh a, [hJoypadDown]
 	and A_BUTTON
 	ret z
 	ld a, [wJumptableIndex]
 	bit 7, a
 	ret
-; 109908
 
-Credits_HandleBButton: ; 109908
-	ld a, [hJoypadDown]
+Credits_HandleBButton:
+	ldh a, [hJoypadDown]
 	and B_BUTTON
 	ret z
 	ld a, [wJumptableIndex]
@@ -136,9 +137,8 @@ Credits_HandleBButton: ; 109908
 	ret z
 	dec [hl]
 	ret
-; 109926
 
-Credits_Jumptable: ; 109926
+Credits_Jumptable:
 	ld a, [wJumptableIndex]
 	and $f
 	ld e, a
@@ -150,9 +150,8 @@ Credits_Jumptable: ; 109926
 	ld h, [hl]
 	ld l, a
 	jp hl
-; 109937
 
-.Jumptable: ; 109937 (42:5937)
+.Jumptable:
 	dw ParseCredits
 	dw Credits_Next
 	dw Credits_Next
@@ -167,24 +166,24 @@ Credits_Jumptable: ; 109926
 	dw Credits_RequestGFX
 	dw Credits_LoopBack
 
-Credits_Next: ; 109951 (42:5951)
+Credits_Next:
 	ld hl, wJumptableIndex
 	inc [hl]
 	ret
 
-Credits_LoopBack: ; 109956 (42:5956)
+Credits_LoopBack:
 	ld hl, wJumptableIndex
 	ld a, [hl]
 	and $f0
 	ld [hl], a
 	ret
 
-Credits_PrepBGMapUpdate: ; 10995e (42:595e)
+Credits_PrepBGMapUpdate:
 	xor a
-	ld [hBGMapMode], a
+	ldh [hBGMapMode], a
 	jp Credits_Next
 
-Credits_UpdateGFXRequestPath: ; 109964 (42:5964)
+Credits_UpdateGFXRequestPath:
 	call Credits_LoadBorderGFX
 	ld a, l
 	ld [wRequested2bppSource], a
@@ -196,15 +195,15 @@ Credits_UpdateGFXRequestPath: ; 109964 (42:5964)
 	ld [wRequested2bppDest + 1], a
 	jr Credits_RequestGFX
 
-Credits_RequestGFX: ; 10997b (42:597b)
+Credits_RequestGFX:
 	xor a
-	ld [hBGMapMode], a
+	ldh [hBGMapMode], a
 	ld a, $8
 	ld [wRequested2bpp], a
 	jp Credits_Next
 
-Credits_LYOverride: ; 109986 (42:5986)
-	ld a, [rLY]
+Credits_LYOverride:
+	ldh a, [rLY]
 	cp $30
 	jr c, Credits_LYOverride
 	ld a, [wCreditsLYOverride]
@@ -217,17 +216,15 @@ Credits_LYOverride: ; 109986 (42:5986)
 	call .Fill
 	jp Credits_Next
 
-.Fill: ; 1099a3 (42:59a3)
+.Fill:
 	ld c, $8
 .loop
 	ld [hli], a
 	dec c
 	jr nz, .loop
 	ret
-; 1099aa
 
-
-ParseCredits: ; 1099aa
+ParseCredits:
 	ld hl, wJumptableIndex
 	bit 7, [hl]
 	jp nz, .done
@@ -246,7 +243,7 @@ ParseCredits: ; 1099aa
 ; First, let's clear the current text display,
 ; starting from line 5.
 	xor a
-	ld [hBGMapMode], a
+	ldh [hBGMapMode], a
 	hlcoord 0, 5
 	ld bc, 20 * 12
 	ld a, " "
@@ -358,9 +355,9 @@ ParseCredits: ; 1099aa
 	ld [wCreditsTimer], a
 
 	xor a
-	ld [hBGMapThird], a
+	ldh [hBGMapThird], a
 	ld a, 1
-	ld [hBGMapMode], a
+	ldh [hBGMapMode], a
 
 .done
 	jp Credits_Next
@@ -383,7 +380,7 @@ ParseCredits: ; 1099aa
 	push de
 	ld a, [wCreditsPos]
 	ld e, a
-	ld a, [wCreditsPos+1]
+	ld a, [wCreditsPos + 1]
 	ld d, a
 	ld hl, CreditsScript
 	add hl, de
@@ -392,19 +389,17 @@ ParseCredits: ; 1099aa
 	ld a, e
 	ld [wCreditsPos], a
 	ld a, d
-	ld [wCreditsPos+1], a
+	ld [wCreditsPos + 1], a
 	ld a, [hl]
 	pop de
 	pop hl
 	ret
-; 109a95
 
-
-ConstructCreditsTilemap: ; 109a95 (42:5a95)
+ConstructCreditsTilemap:
 	xor a
-	ld [hBGMapMode], a
+	ldh [hBGMapMode], a
 	ld a, $c
-	ld [hBGMapAddress], a
+	ldh [hBGMapAddress], a
 
 	ld a, $28
 	hlcoord 0, 0
@@ -446,14 +441,14 @@ ConstructCreditsTilemap: ; 109a95 (42:5a95)
 
 	call WaitBGMap2
 	xor a
-	ld [hBGMapMode], a
-	ld [hBGMapAddress], a
+	ldh [hBGMapMode], a
+	ldh [hBGMapAddress], a
 	hlcoord 0, 0
 	call .InitTopPortion
 	call WaitBGMap2
 	ret
 
-.InitTopPortion: ; 109aff (42:5aff)
+.InitTopPortion:
 	ld b, 5
 .outer_loop
 	push hl
@@ -478,7 +473,7 @@ endr
 	jr nz, .outer_loop
 	ret
 
-DrawCreditsBorder: ; 109b1d (42:5b1d)
+DrawCreditsBorder:
 	ld c, SCREEN_WIDTH / 4
 .loop
 	push af
@@ -492,7 +487,7 @@ endr
 	jr nz, .loop
 	ret
 
-GetCreditsPalette: ; 109b2c
+GetCreditsPalette:
 	call .GetPalAddress
 
 	push hl
@@ -541,9 +536,8 @@ GetCreditsPalette: ; 109b2c
 
 CreditsPalettes:
 INCLUDE "gfx/credits/credits.pal"
-; 109bca
 
-Credits_LoadBorderGFX: ; 109bca (42:5bca)
+Credits_LoadBorderGFX:
 	ld hl, wCreditsBorderFrame
 	ld a, [hl]
 	cp $ff
@@ -570,11 +564,10 @@ Credits_LoadBorderGFX: ; 109bca (42:5bca)
 	ret
 
 .init
-	ld hl, wCreditsFaux2bpp
+	ld hl, wCreditsBlankFrame2bpp
 	ret
-; 109bf1 (42:5bf1)
 
-.Frames: ; 109bf1
+.Frames:
 	dw CreditsPichuGFX
 	dw CreditsPichuGFX     + 16 tiles
 	dw CreditsPichuGFX     + 32 tiles
@@ -591,14 +584,13 @@ Credits_LoadBorderGFX: ; 109bca (42:5bca)
 	dw CreditsIgglybuffGFX + 16 tiles
 	dw CreditsIgglybuffGFX + 32 tiles
 	dw CreditsIgglybuffGFX + 48 tiles
-; 109c11
 
-Credits_TheEnd: ; 109c11 (42:5c11)
+Credits_TheEnd:
 	ld a, $40
 	hlcoord 6, 9
 	call .Load
 	hlcoord 6, 10
-.Load: ; 109c1c (42:5c1c)
+.Load:
 	ld c, 8
 .loop
 	ld [hli], a
@@ -606,12 +598,10 @@ Credits_TheEnd: ; 109c11 (42:5c11)
 	dec c
 	jr nz, .loop
 	ret
-; 109c24 (42:5c24)
-
 
 CreditsBorderGFX:    INCBIN "gfx/credits/border.2bpp"
 
-CreditsMonsGFX:
+CreditsMonsGFX: ; used only for BANK(CreditsMonsGFX)
 CreditsPichuGFX:     INCBIN "gfx/credits/pichu.2bpp"
 CreditsSmoochumGFX:  INCBIN "gfx/credits/smoochum.2bpp"
 CreditsDittoGFX:     INCBIN "gfx/credits/ditto.2bpp"

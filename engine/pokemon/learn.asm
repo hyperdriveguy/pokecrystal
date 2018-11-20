@@ -1,4 +1,4 @@
-LearnMove: ; 6508
+LearnMove:
 	call LoadTileMapToTempTileMap
 	ld a, [wCurPartyMon]
 	ld hl, wPartyMonNicknames
@@ -36,7 +36,7 @@ LearnMove: ; 6508
 
 	push hl
 	push de
-	ld [wd265], a
+	ld [wNamedObjectIndexBuffer], a
 
 	ld b, a
 	ld a, [wBattleMode]
@@ -117,9 +117,8 @@ LearnMove: ; 6508
 	call PrintText
 	ld b, 1
 	ret
-; 65d3
 
-ForgetMove: ; 65d3
+ForgetMove:
 	push hl
 	ld hl, Text_TryingToLearn
 	call PrintText
@@ -200,42 +199,36 @@ ForgetMove: ; 65d3
 .cancel
 	scf
 	ret
-; 666b
 
-Text_LearnedMove: ; 666b
+Text_LearnedMove:
 ; <MON> learned <MOVE>!
-	text_jump UnknownText_0x1c5660
-	db "@"
-; 6670
+	text_far UnknownText_0x1c5660
+	text_end
 
-Text_ForgetWhich: ; 6670
+Text_ForgetWhich:
 ; Which move should be forgotten?
-	text_jump UnknownText_0x1c5678
-	db "@"
-; 6675
+	text_far UnknownText_0x1c5678
+	text_end
 
-Text_StopLearning: ; 6675
+Text_StopLearning:
 ; Stop learning <MOVE>?
-	text_jump UnknownText_0x1c5699
-	db "@"
-; 667a
+	text_far UnknownText_0x1c5699
+	text_end
 
-Text_DidNotLearn: ; 667a
+Text_DidNotLearn:
 ; <MON> did not learn <MOVE>.
-	text_jump UnknownText_0x1c56af
-	db "@"
-; 667f
+	text_far UnknownText_0x1c56af
+	text_end
 
-Text_TryingToLearn: ; 667f
+Text_TryingToLearn:
 ; <MON> is trying to learn <MOVE>. But <MON> can't learn more than
 ; four moves. Delete an older move to make room for <MOVE>?
-	text_jump UnknownText_0x1c56c9
-	db "@"
-; 6684
+	text_far UnknownText_0x1c56c9
+	text_end
 
-Text_1_2_and_Poof: ; 6684
-	text_jump UnknownText_0x1c5740 ; 1, 2 and…
-	start_asm
+Text_1_2_and_Poof:
+	text_far UnknownText_0x1c5740 ; 1, 2 and…
+	text_asm
 	push de
 	ld de, SFX_SWITCH_POKEMON
 	call PlaySFX
@@ -245,12 +238,10 @@ Text_1_2_and_Poof: ; 6684
 
 .PoofForgot:
 ; Poof! <MON> forgot <MOVE>. And…
-	text_jump UnknownText_0x1c574e
-	db "@"
-; 669a
+	text_far UnknownText_0x1c574e
+	text_end
 
-Text_CantForgetHM: ; 669a
+Text_CantForgetHM:
 ; HM moves can't be forgotten now.
-	text_jump UnknownText_0x1c5772
-	db "@"
-; 669f
+	text_far UnknownText_0x1c5772
+	text_end

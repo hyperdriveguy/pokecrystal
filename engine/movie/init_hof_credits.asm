@@ -1,4 +1,4 @@
-InitDisplayForHallOfFame: ; 4e881
+InitDisplayForHallOfFame:
 	call ClearBGPalettes
 	call ClearTileMap
 	call ClearSprites
@@ -14,8 +14,8 @@ InitDisplayForHallOfFame: ; 4e881
 	xor a
 	call ByteFill
 	xor a
-	ld [hSCY], a
-	ld [hSCX], a
+	ldh [hSCY], a
+	ldh [hSCX], a
 	call EnableLCD
 	ld hl, .SavingRecordDontTurnOff
 	call PrintText
@@ -23,12 +23,12 @@ InitDisplayForHallOfFame: ; 4e881
 	call SetPalettes
 	ret
 
-.SavingRecordDontTurnOff: ; 0x4e8bd
+.SavingRecordDontTurnOff:
 	; SAVING RECORD… DON'T TURN OFF!
-	text_jump UnknownText_0x1bd39e
-	db "@"
+	text_far UnknownText_0x1bd39e
+	text_end
 
-InitDisplayForRedCredits: ; 4e8c2
+InitDisplayForRedCredits:
 	call ClearBGPalettes
 	call ClearTileMap
 	call ClearSprites
@@ -53,18 +53,18 @@ InitDisplayForRedCredits: ; 4e8c2
 	dec c
 	jr nz, .load_white_palettes
 	xor a
-	ld [hSCY], a
-	ld [hSCX], a
+	ldh [hSCY], a
+	ldh [hSCX], a
 	call EnableLCD
 	call WaitBGMap2
 	call SetPalettes
 	ret
 
-ResetDisplayBetweenHallOfFameMons: ; 4e906
-	ld a, [rSVBK]
+ResetDisplayBetweenHallOfFameMons:
+	ldh a, [rSVBK]
 	push af
 	ld a, BANK(wDecompressScratch)
-	ld [rSVBK], a
+	ldh [rSVBK], a
 	ld hl, wDecompressScratch
 	ld bc, wScratchAttrMap - wDecompressScratch
 	ld a, " "
@@ -75,5 +75,5 @@ ResetDisplayBetweenHallOfFameMons: ; 4e906
 	ld c, 4 tiles
 	call Request2bpp
 	pop af
-	ld [rSVBK], a
+	ldh [rSVBK], a
 	ret

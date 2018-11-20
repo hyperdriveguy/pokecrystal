@@ -1,4 +1,4 @@
-BattleCommand_Counter: ; 35813
+BattleCommand_Counter:
 ; counter
 
 	ld a, 1
@@ -57,5 +57,3 @@ BattleCommand_Counter: ; 35813
 	xor a
 	ld [wAttackMissed], a
 	ret
-
-; 35864

@@ -1,5 +1,5 @@
 
-HandleNewMap: ; 1045b0
+HandleNewMap:
 	call Clearwc7e8
 	call ResetMapBufferEventFlags
 	call ResetFlashIfOutOfCave
@@ -7,7 +7,7 @@ HandleNewMap: ; 1045b0
 	call ResetBikeFlags
 	ld a, MAPCALLBACK_NEWMAP
 	call RunMapCallback
-InitCommandQueue: ; 1045c4
+InitCommandQueue:
 	farcall ClearCmdQueue
 	ld a, MAPCALLBACK_CMDQUEUE
 	call RunMapCallback
@@ -15,11 +15,10 @@ InitCommandQueue: ; 1045c4
 	ld [wMapTimeOfDay], a
 	ret
 
-
-EnterMapConnection: ; 1045d6
+EnterMapConnection:
 ; Return carry if a connection has been entered.
 	ld a, [wPlayerStepDirection]
-	and a
+	and a ; DOWN
 	jp z, .south
 	cp UP
 	jp z, .north
@@ -150,9 +149,8 @@ EnterMapConnection: ; 1045d6
 .done
 	scf
 	ret
-; 1046c6
 
-LoadWarpData: ; 1046c6
+LoadWarpData:
 	call .SaveDigWarp
 	call .SetSpawn
 	ld a, [wNextWarp]
@@ -163,7 +161,7 @@ LoadWarpData: ; 1046c6
 	ld [wMapNumber], a
 	ret
 
-.SaveDigWarp: ; 1046df (41:46df)
+.SaveDigWarp:
 	call GetMapEnvironment
 	call CheckOutdoorMap
 	ret nz
@@ -195,7 +193,7 @@ LoadWarpData: ; 1046c6
 	ld [wDigMapNumber], a
 	ret
 
-.SetSpawn: ; 104718 (41:4718)
+.SetSpawn:
 	call GetMapEnvironment
 	call CheckOutdoorMap
 	ret nz
@@ -227,7 +225,7 @@ LoadWarpData: ; 1046c6
 	ld [wLastSpawnMapNumber], a
 	ret
 
-LoadMapTimeOfDay: ; 104750
+LoadMapTimeOfDay:
 	ld hl, wVramState
 	res 6, [hl]
 	ld a, $1
@@ -239,19 +237,19 @@ LoadMapTimeOfDay: ; 104750
 	call .PushAttrMap
 	ret
 
-.ClearBGMap: ; 104770 (41:4770)
+.ClearBGMap:
 	ld a, HIGH(vBGMap0)
 	ld [wBGMapAnchor + 1], a
 	xor a ; LOW(vBGMap0)
 	ld [wBGMapAnchor], a
-	ld [hSCY], a
-	ld [hSCX], a
+	ldh [hSCY], a
+	ldh [hSCX], a
 	farcall ApplyBGMapAnchorToObjects
 
-	ld a, [rVBK]
+	ldh a, [rVBK]
 	push af
 	ld a, $1
-	ld [rVBK], a
+	ldh [rVBK], a
 
 	xor a
 	ld bc, vBGMap1 - vBGMap0
@@ -259,7 +257,7 @@ LoadMapTimeOfDay: ; 104750
 	call ByteFill
 
 	pop af
-	ld [rVBK], a
+	ldh [rVBK], a
 
 	ld a, "■"
 	ld bc, vBGMap1 - vBGMap0
@@ -267,16 +265,16 @@ LoadMapTimeOfDay: ; 104750
 	call ByteFill
 	ret
 
-.PushAttrMap: ; 1047a3 (41:47a3)
+.PushAttrMap:
 	decoord 0, 0
 	call .copy
-	ld a, [hCGB]
+	ldh a, [hCGB]
 	and a
 	ret z
 
 	decoord 0, 0, wAttrMap
 	ld a, $1
-	ld [rVBK], a
+	ldh [rVBK], a
 .copy
 	hlbgcoord 0, 0
 	ld c, SCREEN_WIDTH
@@ -295,27 +293,26 @@ LoadMapTimeOfDay: ; 104750
 	dec b
 	jr nz, .row
 	ld a, $0
-	ld [rVBK], a
+	ldh [rVBK], a
 	ret
 
-LoadGraphics: ; 1047cf
+LoadGraphics:
 	call LoadTileset
 	call LoadTilesetGFX
 	xor a
-	ld [hMapAnims], a
+	ldh [hMapAnims], a
 	xor a
-	ld [hTileAnimFrame], a
+	ldh [hTileAnimFrame], a
 	farcall RefreshSprites
 	call LoadFontsExtra
 	farcall LoadOverworldFont
 	ret
 
-LoadMapPalettes: ; 1047eb
+LoadMapPalettes:
 	ld b, SCGB_MAPPALS
 	jp GetSGBLayout
-; 1047f0
 
-RefreshMapSprites: ; 1047f0
+RefreshMapSprites:
 	call ClearSprites
 	farcall ReturnFromMapSetupScript
 	call GetMovementPermissions
@@ -333,7 +330,7 @@ RefreshMapSprites: ; 1047f0
 	ld [wPlayerSpriteSetupFlags], a
 	ret
 
-CheckMovingOffEdgeOfMap:: ; 104820 (41:4820)
+CheckMovingOffEdgeOfMap::
 	ld a, [wPlayerStepDirection]
 	cp STANDING
 	ret z
@@ -390,8 +387,7 @@ CheckMovingOffEdgeOfMap:: ; 104820 (41:4820)
 	scf
 	ret
 
-
-GetCoordOfUpperLeftCorner:: ; 10486d
+GetCoordOfUpperLeftCorner::
 	ld hl, wOverworldMapBlocks
 	ld a, [wXCoord]
 	bit 0, a
@@ -436,4 +432,3 @@ GetCoordOfUpperLeftCorner:: ; 10486d
 	and $1
 	ld [wMetatileStandingX], a
 	ret
-; 1048ba

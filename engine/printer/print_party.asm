@@ -1,6 +1,6 @@
 PRINTPARTY_HP EQUS "\"◀\"" ; $71
 
-PrintPage1: ; 1dc1b0
+PrintPage1:
 	hlcoord 0, 0
 	decoord 0, 0, wPrinterTileMapBuffer
 	ld bc, 17 * SCREEN_WIDTH
@@ -26,11 +26,11 @@ PrintPage1: ; 1dc1b0
 	hlcoord 2, 11, wPrinterTileMapBuffer
 	lb bc, 5, 18
 	call ClearBox
-	ld a, [wd265]
+	ld a, [wTempSpecies]
 	dec a
 	call CheckCaughtMon
 	push af
-	ld a, [wd265]
+	ld a, [wTempSpecies]
 	ld b, a
 	ld c, 1 ; get page 1
 	farcall GetDexEntryPagePointer
@@ -50,9 +50,8 @@ PrintPage1: ; 1dc1b0
 	jr nz, .column_loop
 	ld [hl], $3a
 	ret
-; 1dc213
 
-PrintPage2: ; 1dc213
+PrintPage2:
 	hlcoord 0, 0, wPrinterTileMapBuffer
 	ld bc, 8 * SCREEN_WIDTH
 	ld a, " "
@@ -76,11 +75,11 @@ PrintPage2: ; 1dc213
 	ld bc, SCREEN_WIDTH
 	ld a, $32
 	call ByteFill
-	ld a, [wd265]
+	ld a, [wTempSpecies]
 	dec a
 	call CheckCaughtMon
 	push af
-	ld a, [wd265]
+	ld a, [wTempSpecies]
 	ld b, a
 	ld c, 2 ; get page 2
 	farcall GetDexEntryPagePointer
@@ -89,9 +88,8 @@ PrintPage2: ; 1dc213
 	ld a, b
 	call nz, FarString
 	ret
-; 1dc26a
 
-.FillColumn: ; 1dc26a
+.FillColumn:
 	push de
 	ld de, SCREEN_WIDTH
 .column_loop
@@ -101,9 +99,8 @@ PrintPage2: ; 1dc213
 	jr nz, .column_loop
 	pop de
 	ret
-; 1dc275
 
-GBPrinterStrings:
+GBPrinterStrings: ; used only for BANK(GBPrinterStrings)
 GBPrinterString_Null: db "@"
 GBPrinterString_CheckingLink: next " CHECKING LINK...@"
 GBPrinterString_Transmitting: next "  TRANSMITTING...@"
@@ -132,14 +129,13 @@ GBPrinterString_PrinterError4:
 	next "Check the Game Boy"
 	next "Printer Manual."
 	db   "@"
-; 1dc381
 
-PrintPartyMonPage1: ; 1dc381
+PrintPartyMonPage1:
 	call ClearBGPalettes
 	call ClearTileMap
 	call ClearSprites
 	xor a
-	ld [hBGMapMode], a
+	ldh [hBGMapMode], a
 	call LoadFontsBattleExtra
 
 	ld de, GBPrinterHPIcon
@@ -174,7 +170,7 @@ PrintPartyMonPage1: ; 1dc381
 	lb bc, 2, 3
 	call PrintNum
 	ld a, [wCurPartySpecies]
-	ld [wd265], a
+	ld [wNamedObjectIndexBuffer], a
 	ld [wCurSpecies], a
 	ld hl, wPartyMonNicknames
 	call Function1dc50e
@@ -190,7 +186,7 @@ PrintPartyMonPage1: ; 1dc381
 	inc hl
 	ld [hl], "."
 	inc hl
-	ld de, wd265
+	ld de, wNamedObjectIndexBuffer
 	lb bc, PRINTNUM_LEADINGZEROS | 1, 3
 	call PrintNum
 	hlcoord 1, 9
@@ -232,14 +228,13 @@ PrintPartyMonPage1: ; 1dc381
 	call GetSGBLayout
 	call SetPalettes
 	ret
-; 1dc47b
 
-PrintPartyMonPage2: ; 1dc47b
+PrintPartyMonPage2:
 	call ClearBGPalettes
 	call ClearTileMap
 	call ClearSprites
 	xor a
-	ld [hBGMapMode], a
+	ldh [hBGMapMode], a
 	call LoadFontsBattleExtra
 	xor a
 	ld [wMonType], a
@@ -284,28 +279,25 @@ PrintPartyMonPage2: ; 1dc47b
 	call GetSGBLayout
 	call SetPalettes
 	ret
-; 1dc507
 
-.PrintTempMonStats: ; 1dc507
+.PrintTempMonStats:
 	lb bc, 2, 3
 	call PrintNum
 	ret
-; 1dc50e
 
-Function1dc50e: ; 1dc50e
+Function1dc50e:
 	ld bc, NAME_LENGTH
 	ld a, [wCurPartyMon]
 	call AddNTimes
 	ld e, l
 	ld d, h
 	ret
-; 1dc51a
 
-Function1dc51a: ; 1dc51a
+Function1dc51a:
 	and a
 	jr z, .no_move
 
-	ld [wd265], a
+	ld [wNamedObjectIndexBuffer], a
 	call GetMoveName
 	jr .got_string
 
@@ -315,9 +307,8 @@ Function1dc51a: ; 1dc51a
 .got_string
 	call PlaceString
 	ret
-; 1dc52c
 
-Function1dc52c: ; 1dc52c
+Function1dc52c:
 	farcall GetGender
 	ld a, " "
 	jr c, .got_gender
@@ -334,18 +325,17 @@ Function1dc52c: ; 1dc52c
 	hlcoord 18, 2
 	ld [hl], "⁂"
 	ret
-; 1dc550
 
-String1dc550: ; 1dc550
+String1dc550:
 	db "OT/@"
 
-String1dc554: ; 1dc554
+String1dc554:
 	db "MOVE@"
 
-String1dc559: ; 1dc559
+String1dc559:
 	db "<ID>№.@"
 
-String1dc55d: ; 1dc55d
+String1dc55d:
 	db   "ATTACK"
 	next "DEFENSE"
 	next "SPCL.ATK"
@@ -353,12 +343,11 @@ String1dc55d: ; 1dc55d
 	next "SPEED"
 	db   "@"
 
-String1dc584: ; 1dc584
+String1dc584:
 	db "------------@"
-; 1dc591
 
-GBPrinterHPIcon: ; 1dc591
+GBPrinterHPIcon:
 INCBIN "gfx/printer/hp.1bpp"
 
-GBPrinterLvIcon: ; 1dc599
+GBPrinterLvIcon:
 INCBIN "gfx/printer/lv.1bpp"

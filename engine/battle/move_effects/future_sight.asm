@@ -1,9 +1,9 @@
-BattleCommand_CheckFutureSight: ; 37d0d
+BattleCommand_CheckFutureSight:
 ; checkfuturesight
 
 	ld hl, wPlayerFutureSightCount
 	ld de, wPlayerFutureSightDamage
-	ld a, [hBattleTurn]
+	ldh a, [hBattleTurn]
 	and a
 	jr z, .ok
 	ld hl, wEnemyFutureSightCount
@@ -25,9 +25,7 @@ BattleCommand_CheckFutureSight: ; 37d0d
 	ld b, futuresight_command
 	jp SkipToBattleCommand
 
-; 37d34
-
-BattleCommand_FutureSight: ; 37d34
+BattleCommand_FutureSight:
 ; futuresight
 
 	call CheckUserIsCharging
@@ -43,7 +41,7 @@ BattleCommand_FutureSight: ; 37d34
 	ld [hl], b
 .AlreadyChargingFutureSight:
 	ld hl, wPlayerFutureSightCount
-	ld a, [hBattleTurn]
+	ldh a, [hBattleTurn]
 	and a
 	jr z, .GotFutureSightCount
 	ld hl, wEnemyFutureSightCount
@@ -59,7 +57,7 @@ BattleCommand_FutureSight: ; 37d34
 	call StdBattleTextBox
 	call BattleCommand_RaiseSub
 	ld de, wPlayerFutureSightDamage
-	ld a, [hBattleTurn]
+	ldh a, [hBattleTurn]
 	and a
 	jr z, .StoreDamage
 	ld de, wEnemyFutureSightDamage
@@ -81,5 +79,3 @@ BattleCommand_FutureSight: ; 37d34
 	call AnimateFailedMove
 	call PrintButItFailed
 	jp EndMoveEffect
-
-; 37d94

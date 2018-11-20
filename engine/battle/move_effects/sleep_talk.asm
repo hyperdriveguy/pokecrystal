@@ -1,11 +1,11 @@
-BattleCommand_SleepTalk: ; 35b33
+BattleCommand_SleepTalk:
 ; sleeptalk
 
 	call ClearLastMove
 	ld a, [wAttackMissed]
 	and a
 	jr nz, .fail
-	ld a, [hBattleTurn]
+	ldh a, [hBattleTurn]
 	and a
 	ld hl, wBattleMonMoves + 1
 	ld a, [wDisabledMove]
@@ -77,7 +77,7 @@ BattleCommand_SleepTalk: ; 35b33
 	ret
 
 .check_has_usable_move
-	ld a, [hBattleTurn]
+	ldh a, [hBattleTurn]
 	and a
 	ld a, [wDisabledMove]
 	jr z, .got_move_2
@@ -141,5 +141,3 @@ BattleCommand_SleepTalk: ; 35b33
 	ret z
 	cp EFFECT_BIDE
 	ret
-
-; 35bff

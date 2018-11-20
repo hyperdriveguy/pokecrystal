@@ -1,4 +1,4 @@
-LoadSGBLayout: ; 864c
+LoadSGBLayout:
 	call CheckCGB
 	jp nz, LoadSGBLayoutCGB
 
@@ -20,16 +20,15 @@ LoadSGBLayout: ; 864c
 	ld de, _LoadSGBLayout_ReturnFromJumpTable
 	push de
 	jp hl
-; 866f
 
-.Jumptable: ; 866f
+.Jumptable:
 	dw .SGB_BattleGrayscale
 	dw .SGB_BattleColors
 	dw .SGB_PokegearPals
 	dw .SGB_StatsScreenHPPals
 	dw .SGB_Pokedex
 	dw .SGB_SlotMachine
-	dw .SGB06
+	dw .SGB_BetaTitleScreen
 	dw .SGB_GSIntro
 	dw .SGB_Diploma
 	dw .SGB_MapPals
@@ -38,11 +37,11 @@ LoadSGBLayout: ; 864c
 	dw .SGB_GSTitleScreen
 	dw .SGB0d
 	dw .SGB_MoveList
-	dw .SGB0f
+	dw .SGB_BetaPikachuMinigame
 	dw .SGB_PokedexSearchOption
-	dw .SGB11
-	dw .SGB12
-	dw .SGB13
+	dw .SGB_BetaPoker
+	dw .SGB_Pokepic
+	dw .SGB_MagnetTrain
 	dw .SGB_PackPals
 	dw .SGB_TrainerCard
 	dw .SGB_PokedexUnownMode
@@ -54,17 +53,15 @@ LoadSGBLayout: ; 864c
 	dw .SGB_TrainerOrMonFrontpicPals
 	dw .SGB_MysteryGift
 	dw .SGB1e
-; 86ad
 
-.SGB_BattleGrayscale: ; 86ad
+.SGB_BattleGrayscale:
 	ld hl, PalPacket_BattleGrayscale
 	ld de, BlkPacket_Battle
 	ret
-; 86b4
 
-.SGB_BattleColors: ; 86b4
+.SGB_BattleColors:
 	ld hl, BlkPacket_Battle
-	call PushSGBPals_
+	call PushSGBPals
 
 	ld hl, PalPacket_9ce6
 	ld de, wSGBPals
@@ -135,9 +132,8 @@ LoadSGBLayout: ; 864c
 	ld a, SCGB_BATTLE_COLORS
 	ld [wSGBPredef], a
 	ret
-; 873c
 
-.SGB_MoveList: ; 873c
+.SGB_MoveList:
 	ld hl, PalPacket_9bd6
 	ld de, wSGBPals
 	ld bc, PALPACKET_LENGTH
@@ -154,15 +150,13 @@ LoadSGBLayout: ; 864c
 	ld hl, wSGBPals
 	ld de, BlkPacket_MoveList
 	ret
-; 875c
 
-.SGB_PokegearPals: ; 875c
+.SGB_PokegearPals:
 	ld hl, PalPacket_Pokegear
 	ld de, BlkPacket_9a86
 	ret
-; 8763
 
-.SGB_StatsScreenHPPals: ; 8763
+.SGB_StatsScreenHPPals:
 	ld hl, PalPacket_9ce6
 	ld de, wSGBPals
 	ld bc, PALPACKET_LENGTH
@@ -196,15 +190,13 @@ LoadSGBLayout: ; 864c
 	ld hl, wSGBPals
 	ld de, BlkPacket_StatsScreen
 	ret
-; 87ab
 
-.SGB_PartyMenu: ; 87ab
+.SGB_PartyMenu:
 	ld hl, PalPacket_PartyMenu
 	ld de, wSGBPals + 1
 	ret
-; 87b2
 
-.SGB_Pokedex: ; 87b2
+.SGB_Pokedex:
 	ld hl, PalPacket_9ce6
 	ld de, wSGBPals
 	ld bc, PALPACKET_LENGTH
@@ -218,7 +210,7 @@ LoadSGBLayout: ; 864c
 	inc hl
 	ld [hl], HIGH(palred 26 + palgreen 10 + palblue 6)
 	ld a, [wCurPartySpecies]
-	call GetMonPalettePointer_
+	call GetMonPalettePointer
 	ld a, [hli]
 	ld [wSGBPals + 9], a
 	ld a, [hli]
@@ -230,9 +222,8 @@ LoadSGBLayout: ; 864c
 	ld hl, wSGBPals
 	ld de, BlkPacket_Pokedex_PC
 	ret
-; 87e9
 
-.SGB_BillsPC: ; 87e9
+.SGB_BillsPC:
 	ld hl, PalPacket_9ce6
 	ld de, wSGBPals
 	ld bc, PALPACKET_LENGTH
@@ -259,15 +250,13 @@ LoadSGBLayout: ; 864c
 	ld hl, wSGBPals
 	ld de, BlkPacket_Pokedex_PC
 	ret
-; 8823
 
-.SGB_PokedexUnownMode: ; 8823
+.SGB_PokedexUnownMode:
 	call .SGB_Pokedex
 	ld de, BlkPacket_PokedexUnownMode
 	ret
-; 882a
 
-.SGB_PokedexSearchOption: ; 882a
+.SGB_PokedexSearchOption:
 	ld hl, PalPacket_9ce6
 	ld de, wSGBPals
 	ld bc, PALPACKET_LENGTH
@@ -283,34 +272,29 @@ LoadSGBLayout: ; 864c
 	ld hl, wSGBPals
 	ld de, BlkPacket_9a86
 	ret
-; 884b
 
-.SGB_PackPals: ; 884b
+.SGB_PackPals:
 	ld hl, PalPacket_Pack
 	ld de, BlkPacket_9a86
 	ret
-; 8852
 
-.SGB_SlotMachine: ; 8852
+.SGB_SlotMachine:
 	ld hl, PalPacket_SlotMachine
 	ld de, BlkPacket_SlotMachine
 	ret
-; 8859
 
-.SGB06: ; 8859
-	ld hl, PalPacket_SCGB_06
-	ld de, BlkPacket_SCGB_06
+.SGB_BetaTitleScreen:
+	ld hl, PalPacket_BetaTitleScreen
+	ld de, BlkPacket_BetaTitleScreen
 	ret
-; 8860
 
 .SGB_Diploma:
-.SGB_MysteryGift: ; 8860
+.SGB_MysteryGift:
 	ld hl, PalPacket_Diploma
 	ld de, BlkPacket_9a86
 	ret
-; 8867
 
-.SGB_GSIntro: ; 8867
+.SGB_GSIntro:
 	ld b, 0
 	ld hl, .BlkPacketTable_GSIntro
 rept 4
@@ -324,45 +308,39 @@ endr
 	ld h, [hl]
 	ld l, a
 	ret
-; 8878
 
-.BlkPacketTable_GSIntro: ; 8878
+.BlkPacketTable_GSIntro:
 	dw BlkPacket_9a86, PalPacket_GSIntroShellderLapras
 	dw BlkPacket_GSIntroJigglypuffPikachu, PalPacket_GSIntroJigglypuffPikachu
 	dw BlkPacket_9a86, PalPacket_GSIntroStartersTransition
-; 8884
 
-.SGB_GSTitleScreen: ; 8884
+.SGB_GSTitleScreen:
 	ld hl, PalPacket_GSTitleScreen
 	ld de, BlkPacket_GSTitleScreen
 	ld a, SCGB_DIPLOMA
 	ld [wSGBPredef], a
 	ret
-; 8890
 
-.SGB13: ; 8890
-	ld hl, PalPacket_SCGB_13
-	ld de, BlkPacket_SCGB_13
+.SGB_MagnetTrain:
+	ld hl, PalPacket_MagnetTrain
+	ld de, BlkPacket_MagnetTrain
 	ret
-; 8897
 
-.SGB0f: ; 8897
-	ld hl, PalPacket_SCGB_0F
+.SGB_BetaPikachuMinigame:
+	ld hl, PalPacket_BetaPikachuMinigame
 	ld de, BlkPacket_9a86
 	ret
-; 889e
 
-.SGB11: ; 889e
+.SGB_BetaPoker:
 	ld hl, BlkPacket_9a86
 	ld de, wPlayerLightScreenCount ; ???
 	ld bc, PALPACKET_LENGTH
 	call CopyBytes
-	ld hl, PalPacket_SCGB_11
+	ld hl, PalPacket_BetaPoker
 	ld de, BlkPacket_9a86
 	ret
-; 88b1
 
-.SGB_MapPals: ; 88b1
+.SGB_MapPals:
 	ld hl, PalPacket_9bd6
 	ld de, wSGBPals
 	ld bc, PALPACKET_LENGTH
@@ -374,9 +352,8 @@ endr
 	ld a, SCGB_MAPPALS
 	ld [wSGBPredef], a
 	ret
-; 88cd
 
-.SGB_Evolution: ; 88cd
+.SGB_Evolution:
 	push bc
 	ld hl, PalPacket_9ce6
 	ld de, wSGBPals
@@ -419,22 +396,19 @@ endr
 	ld hl, wSGBPals
 	ld de, BlkPacket_9a86
 	ret
-; 891a
 
 .SGB0d:
-.SGB_TrainerCard: ; 891a
+.SGB_TrainerCard:
 	ld hl, PalPacket_Diploma
 	ld de, BlkPacket_9a86
 	ret
-; 8921
 
-.SGB_UnownPuzzle: ; 8921
+.SGB_UnownPuzzle:
 	ld hl, PalPacket_UnownPuzzle
 	ld de, BlkPacket_9a86
 	ret
-; 8928
 
-.SGB12: ; 8928
+.SGB_Pokepic:
 	ld hl, PalPacket_9bd6
 	ld de, wSGBPals
 	ld bc, PALPACKET_LENGTH
@@ -462,9 +436,8 @@ endr
 	ld hl, wSGBPals
 	ld de, wSGBPals + PALPACKET_LENGTH
 	ret
-; 8969
 
-.SGB1e: ; 8969
+.SGB1e:
 	ld hl, PalPacket_9ce6
 	ld de, wSGBPals
 	ld bc, PALPACKET_LENGTH
@@ -495,15 +468,13 @@ endr
 	ld hl, wSGBPals
 	ld de, BlkPacket_9a86
 	ret
-; 89a6
 
-.SGB_GamefreakLogo: ; 89a6
+.SGB_GamefreakLogo:
 	ld hl, PalPacket_GamefreakLogo
 	ld de, BlkPacket_9a86
 	ret
-; 89ad
 
-.SGB_PlayerOrMonFrontpicPals: ; 89ad
+.SGB_PlayerOrMonFrontpicPals:
 	ld hl, PalPacket_9ce6
 	ld de, wSGBPals
 	ld bc, PALPACKET_LENGTH
@@ -522,15 +493,13 @@ endr
 	ld hl, wSGBPals
 	ld de, BlkPacket_9a86
 	ret
-; 89d9
 
-.SGB_TradeTube: ; 89d9
+.SGB_TradeTube:
 	ld hl, PalPacket_TradeTube
 	ld de, BlkPacket_9a86
 	ret
-; 89e0
 
-.SGB_TrainerOrMonFrontpicPals: ; 89e0
+.SGB_TrainerOrMonFrontpicPals:
 	ld hl, PalPacket_9ce6
 	ld de, wSGBPals
 	ld bc, PALPACKET_LENGTH
@@ -549,9 +518,8 @@ endr
 	ld hl, wSGBPals
 	ld de, BlkPacket_9a86
 	ret
-; 8a0c
 
-.GetMapPalsIndex: ; 8a0c
+.GetMapPalsIndex:
 	ld a, [wTimeOfDayPal]
 	cp NITE_F
 	jr c, .morn_day
@@ -567,7 +535,7 @@ endr
 	cp DUNGEON
 	jr z, .cave
 	cp ENVIRONMENT_5
-	jr z, .perm5
+	jr z, .env5
 	cp GATE
 	jr z, .gate
 	ld a, [wMapGroup]
@@ -586,20 +554,18 @@ endr
 	ld a, PREDEFPAL_DUNGEONS
 	ret
 
-.perm5
+.env5
 	ld a, PREDEFPAL_VERMILION
 	ret
 
 .gate
 	ld a, PREDEFPAL_PEWTER
 	ret
-; 8a45
 
 INCLUDE "data/maps/sgb_roof_pal_inds.asm"
 
-_LoadSGBLayout_ReturnFromJumpTable: ; 8a60
+_LoadSGBLayout_ReturnFromJumpTable:
 	push de
-	call PushSGBPals_
+	call PushSGBPals
 	pop hl
-	jp PushSGBPals_
-; 8a68
+	jp PushSGBPals

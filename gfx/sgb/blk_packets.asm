@@ -13,7 +13,6 @@ attr_blk_data: MACRO
 	db \5, \6, \7, \8 ; x1, y1, x2, y2
 ENDM
 
-
 BlkPacket_9a86:
 	attr_blk 1
 	attr_blk_data %011, 0,0,0, 00,00, 19,17
@@ -78,13 +77,13 @@ BlkPacket_GSTitleScreen:
 	attr_blk_data %011, 1,1,0, 15,01, 18,04
 	ds 12
 
-BlkPacket_SCGB_06:
+BlkPacket_BetaTitleScreen:
 	attr_blk 1
-	attr_blk_data %111, 0,0,1, 00,00, 19,05
+	attr_blk_data %111, 0,0,1, 00,00, 19,05 ; logo
 	ds 8
 
-BlkPacket_SCGB_13:
+BlkPacket_MagnetTrain:
 	attr_blk 2
-	attr_blk_data %111, 2,2,0, 00,04, 19,13
-	attr_blk_data %011, 1,1,0, 00,06, 19,11
+	attr_blk_data %111, 2,2,0, 00,04, 19,13 ; fence
+	attr_blk_data %011, 1,1,0, 00,06, 19,11 ; train
 	ds 2

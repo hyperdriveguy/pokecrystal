@@ -1,11 +1,11 @@
-BattleCommand_Conversion2: ; 359e6
+BattleCommand_Conversion2:
 ; conversion2
 
 	ld a, [wAttackMissed]
 	and a
 	jr nz, .failed
 	ld hl, wBattleMonType1
-	ld a, [hBattleTurn]
+	ldh a, [hBattleTurn]
 	and a
 	jr z, .got_type
 	ld hl, wEnemyMonType1
@@ -62,5 +62,3 @@ BattleCommand_Conversion2: ; 359e6
 
 .failed
 	jp FailMove
-
-; 35a53

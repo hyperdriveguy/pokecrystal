@@ -1,12 +1,11 @@
-_TitleScreen: ; 10ed67
-
+_TitleScreen:
 	call ClearBGPalettes
 	call ClearSprites
 	call ClearTileMap
 
 ; Turn BG Map update off
 	xor a
-	ld [hBGMapMode], a
+	ldh [hBGMapMode], a
 
 ; Reset timing variables
 	ld hl, wJumptableIndex
@@ -18,24 +17,20 @@ _TitleScreen: ; 10ed67
 ; Turn LCD off
 	call DisableLCD
 
-
 ; VRAM bank 1
 	ld a, 1
-	ld [rVBK], a
-
+	ldh [rVBK], a
 
 ; Decompress running Suicune gfx
 	ld hl, TitleSuicuneGFX
 	ld de, vTiles1
 	call Decompress
 
-
 ; Clear screen palettes
 	hlbgcoord 0, 0
 	ld bc, 20 * BG_MAP_WIDTH
 	xor a
 	call ByteFill
-
 
 ; Fill tile palettes:
 
@@ -46,7 +41,6 @@ _TitleScreen: ; 10ed67
 	ld bc, BG_MAP_WIDTH
 	ld a, 7 ; palette
 	call ByteFill
-
 
 ; BG Map 0:
 
@@ -78,7 +72,6 @@ _TitleScreen: ; 10ed67
 	ld a, 6
 	call ByteFill
 
-
 ; 'CRYSTAL VERSION'
 	hlbgcoord 5, 9
 	ld bc, NAME_LENGTH ; length of version text
@@ -91,11 +84,9 @@ _TitleScreen: ; 10ed67
 	ld a, 0 | VRAM_BANK_1
 	call ByteFill
 
-
 ; Back to VRAM bank 0
 	ld a, $0
-	ld [rVBK], a
-
+	ldh [rVBK], a
 
 ; Decompress logo
 	ld hl, TitleLogoGFX
@@ -106,7 +97,6 @@ _TitleScreen: ; 10ed67
 	ld hl, TitleCrystalGFX
 	ld de, vTiles0
 	call Decompress
-
 
 ; Clear screen tiles
 	hlbgcoord 0, 0
@@ -136,11 +126,11 @@ _TitleScreen: ; 10ed67
 	call InitializeBackground
 
 ; Save WRAM bank
-	ld a, [rSVBK]
+	ldh a, [rSVBK]
 	push af
 ; WRAM bank 5
 	ld a, BANK(wBGPals1)
-	ld [rSVBK], a
+	ldh [rSVBK], a
 
 ; Update palette colors
 	ld hl, TitleScreenPalettes
@@ -155,15 +145,14 @@ _TitleScreen: ; 10ed67
 
 ; Restore WRAM bank
 	pop af
-	ld [rSVBK], a
-
+	ldh [rSVBK], a
 
 ; LY/SCX trickery starts here
 
-	ld a, [rSVBK]
+	ldh a, [rSVBK]
 	push af
 	ld a, BANK(wLYOverrides)
-	ld [rSVBK], a
+	ldh [rSVBK], a
 
 ; Make alternating lines come in from opposite sides
 
@@ -188,36 +177,35 @@ _TitleScreen: ; 10ed67
 	call ByteFill
 
 ; Let LCD Stat know we're messing around with SCX
-	ld a, rSCX - $ff00
-	ld [hLCDCPointer], a
+	ld a, LOW(rSCX)
+	ldh [hLCDCPointer], a
 
 	pop af
-	ld [rSVBK], a
-
+	ldh [rSVBK], a
 
 ; Reset audio
 	call ChannelsOff
 	call EnableLCD
 
 ; Set sprite size to 8x16
-	ld a, [rLCDC]
+	ldh a, [rLCDC]
 	set rLCDC_SPRITE_SIZE, a
-	ld [rLCDC], a
+	ldh [rLCDC], a
 
 	ld a, +112
-	ld [hSCX], a
+	ldh [hSCX], a
 	ld a, 8
-	ld [hSCY], a
+	ldh [hSCY], a
 	ld a, 7
-	ld [hWX], a
+	ldh [hWX], a
 	ld a, -112
-	ld [hWY], a
+	ldh [hWY], a
 
 	ld a, $1
-	ld [hCGBPalUpdate], a
+	ldh [hCGBPalUpdate], a
 
 ; Update BG Map 0 (bank 0)
-	ld [hBGMapMode], a
+	ldh [hBGMapMode], a
 
 	xor a
 	ld [wd002], a
@@ -228,9 +216,8 @@ _TitleScreen: ; 10ed67
 	call PlaySFX
 
 	ret
-; 10eea7
 
-SuicuneFrameIterator: ; 10eea7
+SuicuneFrameIterator:
 	ld hl, wd002
 	ld a, [hl]
 	ld c, a
@@ -250,24 +237,21 @@ SuicuneFrameIterator: ; 10eea7
 	add hl, de
 	ld d, [hl]
 	xor a
-	ld [hBGMapMode], a
+	ldh [hBGMapMode], a
 	call LoadSuicuneFrame
 	ld a, $1
-	ld [hBGMapMode], a
+	ldh [hBGMapMode], a
 	ld a, $3
-	ld [hBGMapThird], a
+	ldh [hBGMapThird], a
 	ret
-; 10eece
 
-.Frames: ; 10eece
-	db $80 ; vTiles4 tile $00
-	db $88 ; vTiles4 tile $08
+.Frames:
+	db $80 ; vTiles3 tile $80
+	db $88 ; vTiles3 tile $88
 	db $00 ; vTiles5 tile $00
 	db $08 ; vTiles5 tile $08
-; 10eed2
 
-
-LoadSuicuneFrame: ; 10eed2
+LoadSuicuneFrame:
 	hlcoord 6, 12
 	ld b, 6
 .bgrows
@@ -290,9 +274,8 @@ LoadSuicuneFrame: ; 10eed2
 	dec b
 	jr nz, .bgrows
 	ret
-; 10eeef
 
-DrawTitleGraphic: ; 10eeef
+DrawTitleGraphic:
 ; input:
 ;   hl: draw location
 ;   b: height
@@ -320,9 +303,8 @@ DrawTitleGraphic: ; 10eeef
 	dec b
 	jr nz, .bgrows
 	ret
-; 10ef06
 
-InitializeBackground: ; 10ef06
+InitializeBackground:
 	ld hl, wVirtualOAMSprite00
 	ld d, -$22
 	ld e, $0
@@ -337,9 +319,8 @@ InitializeBackground: ; 10ef06
 	dec c
 	jr nz, .loop
 	ret
-; 10ef1c
 
-.InitColumn: ; 10ef1c
+.InitColumn:
 	ld c, $6
 	ld b, $40
 .loop2
@@ -358,10 +339,8 @@ InitializeBackground: ; 10ef06
 	dec c
 	jr nz, .loop2
 	ret
-; 10ef32
 
-
-AnimateTitleCrystal: ; 10ef32
+AnimateTitleCrystal:
 ; Move the title screen crystal downward until it's fully visible
 
 ; Stop at y=6
@@ -384,19 +363,15 @@ endr
 	jr nz, .loop
 
 	ret
-; 10ef46
 
-TitleSuicuneGFX: ; 10ef46
+TitleSuicuneGFX:
 INCBIN "gfx/title/suicune.2bpp.lz"
-; 10f326
 
-TitleLogoGFX: ; 10f326
+TitleLogoGFX:
 INCBIN "gfx/title/logo.2bpp.lz"
-; 10fcee
 
-TitleCrystalGFX: ; 10fcee
+TitleCrystalGFX:
 INCBIN "gfx/title/crystal.2bpp.lz"
-; 10fede
 
 TitleScreenPalettes:
 INCLUDE "gfx/title/title.pal"

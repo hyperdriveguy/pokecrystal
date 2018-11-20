@@ -123,7 +123,7 @@ Unreferenced_CorrectPartyErrors:
 	cp EGG
 	ld hl, .TAMAGO
 	jr z, .got_nickname
-	ld [wd265], a
+	ld [wNamedObjectIndexBuffer], a
 	call GetPokemonName
 	ld hl, wStringBuffer1
 .got_nickname
@@ -201,13 +201,11 @@ Unreferenced_CorrectPartyErrors:
 	dec b
 	jr nz, .loop5
 	ret
-; 13b6b
 
-.TAMAGO: ; 13b6b
+.TAMAGO:
 	db "タマゴ@@@"
-; 13b71
 
-.GetLengthOfStringWith6CharCap: ; 13b71
+.GetLengthOfStringWith6CharCap:
 	push de
 	ld c, 1
 	ld b, NAME_LENGTH_JAPANESE
@@ -226,4 +224,3 @@ Unreferenced_CorrectPartyErrors:
 .done
 	pop de
 	ret
-; 13b87
